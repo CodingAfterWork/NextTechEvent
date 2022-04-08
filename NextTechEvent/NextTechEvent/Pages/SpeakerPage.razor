@@ -1,0 +1,24 @@
+﻿@page "/Speaker"
+
+@inject INextTechEventApi _api
+
+<Virtualize ItemsProvider="_api.GetConferencesWithOpenCfpAsync" Context="c" OverscanCount="20">  
+    <ItemContent>
+        <p>
+            <a href="@($"Conferences/{c.Id}")">@c.Name</a> <span>@c.ClosingIn</span>
+        </p>
+    </ItemContent>
+    <Placeholder>
+        <p>
+            Loading!!
+       </p>
+    </Placeholder>
+
+</Virtualize>
+
+
+
+@code{
+
+
+}

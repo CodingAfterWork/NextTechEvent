@@ -1,0 +1,19 @@
+﻿@page "/conferences/{*ConferenceId}"
+
+@inject INextTechEventApi _api
+
+@if (conference != null)
+{    <h1>@conference.Name</h1>    
+}
+
+@code{
+    [Parameter]
+    public string ConferenceId { get; set; }
+    Conference? conference = null;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        conference = await _api.GetConferenceAsync(ConferenceId);
+        await  base.OnParametersSetAsync();
+    }
+}
