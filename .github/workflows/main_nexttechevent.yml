@@ -23,10 +23,10 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release NextTechEvent/*.csproj
+        run: dotnet build --configuration Release NextTechEvent/NextTechEvent/*.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp NextTechEvent/*.csproj
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp NextTechEvent/NextTechEvent/*.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
