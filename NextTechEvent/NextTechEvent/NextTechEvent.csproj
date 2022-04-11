@@ -6,16 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="appsettings.local.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="appsettings.local.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="RavenDB.Client" Version="5.3.101" />
