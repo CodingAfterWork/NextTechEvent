@@ -5,6 +5,7 @@ using Raven.Client.Documents;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -23,9 +24,6 @@ builder.Services.AddSingleton<IDocumentStore>(ctx =>
     store.Initialize();
     return store;
 });
-
-
-
 
 var app = builder.Build();
 
