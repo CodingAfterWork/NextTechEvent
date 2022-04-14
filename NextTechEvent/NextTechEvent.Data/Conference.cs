@@ -24,6 +24,15 @@ public class Conference
     public double Longitude { get; set; }
     public double Latitude { get; set; }
 
+    public string? Twitter { get; set; }
+    public string? CodeOfConductUrl { get; set; }
+
+    public bool IsOnline { get; set; }
+
+    public List<string> Tags { get; set; } = new List<string>();
+
+    public bool AddedAddressInformation { get; set; } = false;
+
     [Newtonsoft.Json.JsonIgnore]
     public string ClosingIn
     {
