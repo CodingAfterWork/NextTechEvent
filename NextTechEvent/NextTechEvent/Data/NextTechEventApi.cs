@@ -9,6 +9,7 @@ namespace NextTechEvent.Data
         Task<Conference> GetConferenceAsync(string id);
         Task<List<Conference>> GetConferencesAsync(string id);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request);
+        ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
     }
 
     public class NextTechEventApi : INextTechEventApi
@@ -40,6 +41,20 @@ namespace NextTechEvent.Data
                 .Statistics(out var stats)
                 .Where(c => c.CfpEndDate > DateTime.Now)
                 .OrderBy(c => c.CfpEndDate)
+                .Skip(request.StartIndex)
+                .Take(request.Count).ToListAsync();
+
+            return new ItemsProviderResult<Conference>(confs, stats.TotalResults);
+        }
+
+        public async ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            var confs =
+                await session.Query<Conference>()
+                .Statistics(out var stats)
+                .Where(c => c.EventStart > DateOnly.FromDateTime(DateTime.Now))
+                .OrderBy(c => c.EventStart)
                 .Skip(request.StartIndex)
                 .Take(request.Count).ToListAsync();
 

@@ -1,15 +1,33 @@
-@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+:root {
+    --background: #FFFAFA;
+    --font-color: #1A1201;
+    --accent: #9C2D49;
+}
+/*Variables dark theme*/
+@media(prefers-color-scheme:dark) {
+    :root {
+        --background: #1A1201;
+        --font-color: #FFFAFA;
+        --accent: #FAB505
+    }
+}
+
+
+
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: tahoma,verdana,sans-serif;
+    background-color: var(--background);
+    color: var(--font-color);
 }
 
 h1:focus {
     outline: none;
 }
 
-a, .btn-link {
-    color: #0071c1;
+a {
+    color: var(--accent);
+    text-decoration:none;
 }
 
 .btn-primary {

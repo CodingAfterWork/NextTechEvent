@@ -1,0 +1,18 @@
+﻿@page "/attendees"
+<h1>Attendees</h1>
+@inject INextTechEventApi _api
+
+<Virtualize ItemsProvider="_api.GetConferencesAsync" Context="c" OverscanCount="20">  
+    <ItemContent>
+        <p>
+           @c.EventStart <a href="@($"Conferences/{c.Id}")">@c.Name</a>
+        </p>
+    </ItemContent>
+    <Placeholder>
+        <p>
+            Loading
+       </p>
+    </Placeholder>
+
+</Virtualize>
+
