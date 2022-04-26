@@ -1,0 +1,33 @@
+﻿@page "/addconference"
+@using Blazm
+@inject INextTechEventApi _api
+@inject NavigationManager _nav
+
+
+<h3>Add Conference</h3>
+
+<EditForm Model="conference" OnValidSubmit="SaveConference">
+    <DataAnnotationsValidator/>
+     <CustomCssClassProvider ProviderType="BootstrapFieldCssClassProvider"/>
+    <div class="mb-3">
+        <label class="form-label">Conference name</label>
+         <InputText @bind-Value="conference.Name"/>
+         <ValidationMessage For="() => conference.Name"/>
+    </div>
+    <button type="submit" class="btn btn-success" disabled="@saving">Save</button>
+</EditForm>
+
+
+@code{
+    Conference conference=new ();
+    bool saving = false;
+    private async Task SaveConference()
+    {
+        saving=true;
+        StateHasChanged();
+        var conf=await _api.SaveConferenceAsync(conference);
+        _nav.NavigateTo($"/conferences/{conf.Id}");
+
+    }
+
+}

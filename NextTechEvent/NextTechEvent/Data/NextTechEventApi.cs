@@ -8,6 +8,7 @@ namespace NextTechEvent.Data
     {
         Task<Conference> GetConferenceAsync(string id);
         Task<List<Conference>> GetConferencesAsync(string id);
+        Task<Conference> SaveConferenceAsync(Conference conference);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
     }
@@ -18,6 +19,14 @@ namespace NextTechEvent.Data
         public NextTechEventApi(IDocumentStore store)
         {
             _store = store;
+        }
+
+        public async Task<Conference> SaveConferenceAsync(Conference conference)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            await session.StoreAsync(conference);
+            await session.SaveChangesAsync();
+            return conference;
         }
 
         public async Task<Conference> GetConferenceAsync(string id)

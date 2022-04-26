@@ -1,11 +1,12 @@
-﻿@page "/Speaker"
+﻿@page "/attendees"
 @using Blazm.Components
-
+<h1>Attendees</h1>
 @inject INextTechEventApi _api
 
-<BlazmGrid ItemsProvider="_api.GetConferencesWithOpenCfpAsync">
+<BlazmGrid ItemsProvider="_api.GetConferencesAsync">
     <GridColumns>
-        <GridColumn Field="@nameof(Conference.Name)" >
+        <GridColumn Field="@nameof(Conference.EventStart)"/>
+        <GridColumn Field="@nameof(Conference.Name)">
             <Template>
                 @{
                     var c = (Conference)context;
@@ -13,7 +14,7 @@
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
             </Template>
         </GridColumn>
-        <GridColumn Field="@nameof(Conference.ClosingIn)" Title="Time left"/>
+        
     </GridColumns>
     <NullGridTemplate>
         <BlazorPro.Spinkit.Circle Center="true"/>

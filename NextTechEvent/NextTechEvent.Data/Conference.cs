@@ -1,8 +1,11 @@
-﻿namespace NextTechEvent.Data;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NextTechEvent.Data;
 
 public class Conference
 {
     public string Id { get; set; }
+    [MinLength(3)]
     public string Name { get; set; }
     public string ImageUrl { get; set; }
     public string CfpUrl { get; set; }

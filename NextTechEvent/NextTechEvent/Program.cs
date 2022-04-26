@@ -1,3 +1,4 @@
+using Blazm.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using NextTechEvent.Data;
@@ -12,6 +13,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<INextTechEventApi, NextTechEventApi>();
+builder.Services.AddBlazm();
 builder.Services.AddSingleton<IDocumentStore>(ctx =>
 {
     var store = new DocumentStore
