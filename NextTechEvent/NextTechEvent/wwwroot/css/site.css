@@ -13,7 +13,10 @@
 }
 
 
-
+.form-label{
+    margin-top:15px;
+    margin-bottom:5px;
+}
 
 html, body {
     font-family: tahoma,verdana,sans-serif;

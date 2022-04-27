@@ -1,0 +1,147 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using System.Diagnostics.CodeAnalysis
+@inherits InputBase<DateTime?> 
+
+@inject IJSRuntime JSRuntime;
+
+    @if(!string.IsNullOrEmpty(LabelText))
+    {
+        <label class="form-label" for="@Id.ToString()">@LabelText</label>
+    }
+<div class="form-group">
+    @if (!ReadOnly)
+    {
+        <input id="@Id.ToString()" type="DateTime" @attributes="@AdditionalAttributes" disabled="@Disabled" class="@CssClass" placeholder="@PlaceHolder" @bind="@CurrentValue" @bind:event="onchange">
+        @if (!string.IsNullOrWhiteSpace(Description))
+        {
+            <div class="inputdescription">@Description</div>
+        }
+        @foreach (var message in EditContext.GetValidationMessages(FieldIdentifier))
+        {
+            <div class="validation-message" @attributes="@AdditionalAttributes">@message</div>
+        }
+        @if (!EditContext.GetValidationMessages(FieldIdentifier).Any() && !string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="valid-feedback">@string.Format(SuccessMessage, this.Value)</div>
+        }
+    }
+    else
+    {
+        <span class="readonlyvalue">@CurrentValue</span>
+    }
+</div>
+
+@code {
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        @if (AdditionalAttributes != null && AdditionalAttributes.ContainsKey("autofocus"))
+        {
+            if (AdditionalAttributes["autofocus"].ToString() == "True")
+            {
+                JSRuntime.InvokeVoidAsync("setFocus", Id.ToString());
+            }
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+}
+@code {
+    [Parameter] 
+    public string SuccessMessage { get; set; } = "";
+
+    [Parameter] 
+    public bool ReadOnly { get; set; } = false;
+
+    [Parameter] 
+    public string? LabelText { get; set; }
+
+    [Parameter] 
+    public string PlaceHolder { get; set; } = "";
+
+    [Parameter] 
+    public string Description { get; set; } = "";
+
+    [Parameter] 
+    public EventCallback<DateTime?> OnValid { get; set; }
+
+    [Parameter] 
+    public bool ShowValidationErrorOnLoad { get; set; } = false;
+
+    [Parameter] 
+    public string Type { get; set; } = "text";
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    public int MyProperty { get; set; }
+    public DateTime? OldValue { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+
+
+    protected override bool TryParseValueFromString(string value, [MaybeNullWhen(false)] out DateTime? result, [NotNullWhen(false)] out string validationErrorMessage)
+    {
+        result = Convert.ToDateTime(value);
+        validationErrorMessage = "";
+        return true;
+    }
+
+
+        protected override Task OnInitializedAsync()
+        {
+            //Hookup Event
+            if (OnValid.HasDelegate)
+            {
+                EditContext.OnValidationStateChanged += async (s, e) =>
+                {
+                    if (OldValue != CurrentValue)
+                    {
+                        OldValue = CurrentValue;
+                        if (!EditContext.GetValidationMessages(FieldIdentifier).Any())
+                        {
+                            await OnValid.InvokeAsync(this.Value);
+                            StateHasChanged();
+                        }
+                    }
+                };
+            }
+            return base.OnInitializedAsync();
+        }
+
+
+        protected override Task OnParametersSetAsync()
+        {
+            try
+            {
+                var displayattribute = FieldIdentifier.Model.GetType()
+                .GetProperty(this.FieldIdentifier.FieldName)?
+                .GetCustomAttribute<DisplayAttribute>();
+                if (displayattribute != null)
+                {
+                    var displayName = displayattribute.Name;
+                    if (!string.IsNullOrEmpty(displayName) && LabelText is null)
+                    {
+                        LabelText = displayName;
+                    }
+                    var placeholder = displayattribute.Prompt;
+                    if (!string.IsNullOrEmpty(placeholder) && string.IsNullOrEmpty(PlaceHolder))
+                    {
+                        PlaceHolder = placeholder;
+                    }
+                    var description = displayattribute.Description;
+                    if (!string.IsNullOrEmpty(description) && string.IsNullOrEmpty(Description))
+                    {
+                        Description = description;
+                    }
+
+                }
+            }
+            catch { }
+
+            if (ShowValidationErrorOnLoad)
+            {
+                EditContext.Validate();
+            }
+            return base.OnParametersSetAsync();
+
+        } 
+}
