@@ -12,7 +12,7 @@
 <div class="form-group">
     @if (!ReadOnly)
     {
-        <input id="@Id.ToString()" type="DateTime" @attributes="@AdditionalAttributes" disabled="@Disabled" class="@CssClass" placeholder="@PlaceHolder" @bind="@CurrentValue" @bind:event="onchange">
+        <input id="@Id.ToString()" type="Date" @attributes="@AdditionalAttributes" disabled="@Disabled" class="@CssClass" placeholder="@PlaceHolder" @bind="@CurrentValue" @bind:event="onchange">
         @if (!string.IsNullOrWhiteSpace(Description))
         {
             <div class="inputdescription">@Description</div>
