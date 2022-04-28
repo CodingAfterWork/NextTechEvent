@@ -1,19 +1,37 @@
 ﻿@page "/addconference"
 @using Blazm
+@using NextTechEvent.Components
 @inject INextTechEventApi _api
 @inject NavigationManager _nav
 
 
-<h3>Add Conference</h3>
+<h1>Add Conference</h1>
 
 <EditForm Model="conference" OnValidSubmit="SaveConference">
     <DataAnnotationsValidator/>
-     <CustomCssClassProvider ProviderType="BootstrapFieldCssClassProvider"/>
-    <div class="mb-3">
-        <label class="form-label">Conference name</label>
-         <InputText @bind-Value="conference.Name"/>
-         <ValidationMessage For="() => conference.Name"/>
-    </div>
+    <CustomCssClassProvider ProviderType="BootstrapFieldCssClassProvider"/>
+    <h2>Conference information</h2>
+    <BlazmInputText @bind-Value="conference.Name"/>
+    <BlazmInputDate @bind-Value="conference.EventStart"/>
+    <BlazmInputDate @bind-Value="conference.EventEnd"/>
+    <BlazmInputText @bind-Value="conference.EventUrl"/>
+    <BlazmInputText @bind-Value="conference.Twitter"/>
+    <BlazmInputText @bind-Value="conference.CodeOfConductUrl"/>
+    
+    <input type="checkbox" @onclick="@(()=>{HasOpenCfp=!HasOpenCfp;})" /> Has open Call for paper
+    @if(HasOpenCfp)
+    {
+        <h2>Call for paper</h2>
+        <BlazmInputDate @bind-Value="conference.CfpStartDate"/>
+        <BlazmInputDate @bind-Value="conference.CfpEndDate"/>
+        <BlazmInputText @bind-Value="conference.CfpUrl" />
+    }
+    <h2>Location</h2>
+    <BlazmInputText @bind-Value="conference.Venue" />
+    <BlazmInputText @bind-Value="conference.Country" />
+    <BlazmInputText @bind-Value="conference.City" />
+    
+
     <button type="submit" class="btn btn-success" disabled="@saving">Save</button>
 </EditForm>
 
@@ -21,10 +39,18 @@
 @code{
     Conference conference=new ();
     bool saving = false;
+    bool HasOpenCfp = false;
     private async Task SaveConference()
     {
         saving=true;
         StateHasChanged();
+        if (!HasOpenCfp)
+        {
+            conference.CfpStartDate = null;
+            conference.CfpEndDate = null;
+            conference.CfpUrl = null;
+        }
+
         var conf=await _api.SaveConferenceAsync(conference);
         _nav.NavigateTo($"/conferences/{conf.Id}");
 
