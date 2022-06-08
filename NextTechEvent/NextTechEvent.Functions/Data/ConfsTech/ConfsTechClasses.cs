@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NextTechEvent.Function.Data.ConfsTech
 {
@@ -21,6 +19,8 @@ namespace NextTechEvent.Function.Data.ConfsTech
         public string twitter { get; set; }
         public string cfpUrl { get; set; }
         public DateTime? cfpEndDate { get; set; }
+        public string? cocUrl { get; set; }
+        public bool online { get; set; } = false;
     }
 
 }

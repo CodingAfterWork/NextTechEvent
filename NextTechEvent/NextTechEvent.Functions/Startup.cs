@@ -14,7 +14,7 @@ namespace NextTechEvent.Function
         {
             var config = new ConfigurationBuilder()
             .AddEnvironmentVariables()
-            .AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
+            //.AddJsonFile("appsettings.local.json", optional: false, reloadOnChange: true)
             .Build();
 
             builder.Services.AddSingleton<IDocumentStore>(ctx =>

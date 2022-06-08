@@ -13,10 +13,6 @@
     <ProjectReference Include="..\NextTechEvent.Data\NextTechEvent.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.local.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
