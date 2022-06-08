@@ -1,0 +1,31 @@
+﻿@inject IJSRuntime jsRuntime
+
+<div id="@id"></div>
+
+@code {
+    string id=Guid.NewGuid().ToString();
+    [Parameter]
+    public int Start { get; set; } = 0;
+    [Parameter]
+    public int End { get; set; } = 0;
+    [Parameter]
+    public int Interval { get; set; } = 5000;
+
+    bool refresh = true;
+    protected override Task OnParametersSetAsync()
+    {
+        refresh = true;
+        return base.OnParametersSetAsync();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender || refresh)
+        {
+            refresh = false;
+            IJSObjectReference jsRef = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "/Components/AnimatedCounter.razor.js");
+            await jsRef.InvokeVoidAsync("animateValue", id, Start,End,Interval);
+        }
+        await  base.OnAfterRenderAsync(firstRender);
+    }
+}

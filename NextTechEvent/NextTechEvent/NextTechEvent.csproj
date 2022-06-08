@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="C:\Users\Jimmy\.nuget\packages\blazorpro.spinkit\1.2.0\contentFiles\any\netstandard2.1\wwwroot\spinkit.min.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
     <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
     <None Include="wwwroot\css\open-iconic\ICON-LICENSE" />
@@ -22,6 +26,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NextTechEvent.Data\NextTechEvent.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataAnnotations\" />
   </ItemGroup>
 
 </Project>

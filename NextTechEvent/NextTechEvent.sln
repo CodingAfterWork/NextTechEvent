@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextTechEvent", "NextTechEv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextTechEvent.Data", "NextTechEvent.Data\NextTechEvent.Data.csproj", "{3BE33EE3-7B38-40F3-B850-639A9AEB3A05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextTechEvent.Functions", "NextTechEvent.Functions\NextTechEvent.Functions.csproj", "{7C584944-FF2F-41AD-91AE-3FE287A0A807}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NextTechEvent.Functions", "NextTechEvent.Functions\NextTechEvent.Functions.csproj", "{7C584944-FF2F-41AD-91AE-3FE287A0A807}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

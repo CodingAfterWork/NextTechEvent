@@ -1,5 +1,24 @@
 ﻿@page "/"
+@inject INextTechEventApi _api
 
+@using NextTechEvent.Components
 <PageTitle>Index</PageTitle>
 
 <h1>This is a site for <a href="/Speaker">Speakers</a>,<a href="/Organizers">organizers</a>, and <a href="/Attendees">attendees</a></h1>
+
+
+<AnimatedCounter Start="@(opencfp/2)" End ="@opencfp"></AnimatedCounter>
+<AnimatedCounter Start="@(upcoming/2)" End ="@upcoming"></AnimatedCounter>
+
+@code
+{
+    int opencfp;
+    int upcoming;
+    protected async override Task OnInitializedAsync()
+    {
+        var confs = await _api.GetConferencesAsync();
+        opencfp = confs.Where(c => c.CfpEndDate>DateTime.Now).Count();
+        upcoming = confs.Where(c => c.EventEnd>DateOnly.FromDateTime(DateTime.Now)).Count();
+        await  base.OnInitializedAsync();
+    }
+}
