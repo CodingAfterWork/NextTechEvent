@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NextTechEvent.Data;
+using NextTechEvent.Functions.Data.AzureMaps;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
@@ -33,9 +34,9 @@ public class ConferenceFunctions
     public async Task UpdateConferences([TimerTrigger("* * * * * *")] TimerInfo myTimer, ILogger log)
     //public async Task UpdateConferences([TimerTrigger("0 0 */6 * * *")] TimerInfo myTimer, ILogger log)
     {
-        await UpdateSessionizeConferences(log);
-        await UpdateJoindInConferences(log);
-        await UpdateConfsTechConferences(log);
+        //await UpdateSessionizeConferences(log);
+        //await UpdateJoindInConferences(log);
+        //await UpdateConfsTechConferences(log);
         await UpdateLocation(log);
     }
 
@@ -44,39 +45,72 @@ public class ConferenceFunctions
         using IDocumentSession session = _store.OpenSession();
         var fromdate = DateOnly.FromDateTime(DateTime.Now);
 
-        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" && c.Longitude == 0 && c.Latitude == 0 && c.AddedAddressInformation == false && c.Venue != "").ToList();
+        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" /*&& c.Longitude == 0 && c.Latitude == 0 && c.AddedAddressInformation == false*/ && c.Venue != "").ToList();
 
-        foreach (var item in conflist)
+        foreach (Conference item in conflist)
         {
+            log.Log(LogLevel.Information, $"Geolocating {item.Name}");
             try
             {
                 var query = Uri.EscapeDataString(HttpUtility.HtmlDecode(item.Venue));
-                var BingApiKey = _configuration["BingApiKey"];
-                var url = $"http://dev.virtualearth.net/REST/v1/Locations/{query}?includeNeighborhood=false&maxResults=1&o=json&key={BingApiKey}";
+                var apiKey = _configuration["AzureMapsKey"];
+                var url = $"https://atlas.microsoft.com/search/address/json?&subscription-key={apiKey}&api-version=1.0&language=en-US&query={query}";
                 var json = await _client.GetStringAsync(url);
 
-                var root = JsonConvert.DeserializeObject<Functions.Data.Bing.LocationResponse>(json);
+                var root = JsonConvert.DeserializeObject<GeoLocationResults>(json);
 
-                if (root.resourceSets.Length > 0 && root.resourceSets[0].resources.Length > 0)
+                if (root.results.Length > 0)
                 {
-                    var resource = root.resourceSets[0].resources[0];
-                    item.Longitude = resource.geocodePoints.First().coordinates[1];
-                    item.Latitude = resource.geocodePoints.First().coordinates[0];
-                    if (item.Country == null)
+                    var result = root.results.FirstOrDefault();
+                    if (result != null)
                     {
-                        item.Country = resource.address.countryRegion;
-                    }
-                    if (item.City == null)
-                    {
-                        item.City = resource.address.locality;
+                        item.Latitude = Convert.ToDouble(result.position.lat);
+                        item.Longitude = Convert.ToDouble(result.position.lon);
+
+                        if (item.Country == null)
+                        {
+                            item.Country = result.address.country;
+                        }
+                        if (item.City == null)
+                        {
+                            item.City = result.address.municipality;
+                        }
                     }
                 }
-                item.AddedAddressInformation = true;
-                session.Store(item);
+
+                //Try and get the weather
+
+                if (item.Longitude != 0 && item.Latitude != 0)
+                {
+                    log.Log(LogLevel.Information, $"Finding weather {item.Name}");
+                    var lonlat = $"{item.Latitude.ToString("G", CultureInfo.CreateSpecificCulture("en-US"))},{item.Longitude.ToString("G", CultureInfo.CreateSpecificCulture("en-US"))}";
+                    var weatherurl = $"https://atlas.microsoft.com/weather/historical/normals/daily/json?&subscription-key={apiKey}&api-version=1.0&language=en-US&query={lonlat}&startDate={item.EventStart.ToString("yyyy-MM-dd")}&endDate={item.EventEnd.ToString("yyyy-MM-dd")}";
+                    var weatherjson = await _client.GetStringAsync(weatherurl);
+
+                    var weatherroot = JsonConvert.DeserializeObject<WeatherResults>(weatherjson);
+
+                    if (weatherroot.results.Any())
+                    {
+                        var tsf = session.TimeSeriesFor<WeatherData>(item, "WeatherData");
+                        foreach (var temp in weatherroot.results)
+                        {
+                            tsf.Append(temp.date.Date, new WeatherData
+                            {
+                                Minimum = Convert.ToDouble(temp.temperature.minimum.value),
+                                Maximum = Convert.ToDouble(temp.temperature.maximum.value),
+                                Average = Convert.ToDouble(temp.temperature.average.value)
+                            });
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                //If there is an error, set AddedAddressInformation to true, because we tried
+
+            }
+            finally
+            {
+                item.UpdateDate = DateTime.Now;
                 item.AddedAddressInformation = true;
                 session.Store(item);
             }

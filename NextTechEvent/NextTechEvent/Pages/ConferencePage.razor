@@ -14,10 +14,11 @@
     public string ConferenceId { get; set; }
     Conference? conference = null;
     CultureInfo culture=CultureInfo.GetCultureInfo("en-US");
+
     protected override async Task OnParametersSetAsync()
     {
-        
         conference = await _api.GetConferenceAsync(ConferenceId);
+        
         await  base.OnParametersSetAsync();
     }
 }

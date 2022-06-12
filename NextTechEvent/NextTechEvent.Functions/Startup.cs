@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NextTechEvent.Data;
 using Raven.Client.Documents;
 using System;
 using System.Security.Cryptography.X509Certificates;
@@ -27,7 +28,7 @@ namespace NextTechEvent.Function
                 };
 
                 store.Initialize();
-
+                store.TimeSeries.Register<Conference, WeatherData>("Weather");
                 return store;
             });
 

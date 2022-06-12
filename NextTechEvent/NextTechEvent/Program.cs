@@ -1,6 +1,4 @@
 using Blazm.Components;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using NextTechEvent.Data;
 using Raven.Client.Documents;
 using System.Security.Cryptography.X509Certificates;
@@ -18,12 +16,12 @@ builder.Services.AddSingleton<IDocumentStore>(ctx =>
 {
     var store = new DocumentStore
     {
-        Urls = new[] {"https://a.free.caw.ravendb.cloud"},
-        Database= "NextTechEvent",
-        Certificate=new X509Certificate2(Convert.FromBase64String(builder.Configuration["RavenCert"]), builder.Configuration["RavenPassword"])
+        Urls = new[] { "https://a.free.caw.ravendb.cloud" },
+        Database = "NextTechEvent",
+        Certificate = new X509Certificate2(Convert.FromBase64String(builder.Configuration["RavenCert"]), builder.Configuration["RavenPassword"])
     };
-
     store.Initialize();
+    store.TimeSeries.Register<Conference, WeatherData>();
     return store;
 });
 

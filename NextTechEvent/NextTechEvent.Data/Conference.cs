@@ -12,7 +12,7 @@ public class Conference
     [Url]
     public string ImageUrl { get; set; }
     [Url]
-    [Display(Name="Call for paper URL")]
+    [Display(Name = "Call for paper URL")]
     public string? CfpUrl { get; set; }
     [Display(Name = "Call for paper opens")]
     public DateTime? CfpStartDate { get; set; } = DateTime.Now;
@@ -23,7 +23,7 @@ public class Conference
     public string EventUrl { get; set; }
     [MustBeFutureDate]
     [Display(Name = "When does the event start?")]
-    public DateOnly EventStart { get; set; }= DateOnly.FromDateTime(DateTime.Now);
+    public DateOnly EventStart { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     [Display(Name = "When does the event end?")]
     [MustBeFutureDate]
     public DateOnly EventEnd { get; set; } = DateOnly.FromDateTime(DateTime.Now);
@@ -46,9 +46,9 @@ public class Conference
 
     [Display(Name = "What is the Twitter handle of the event?")]
     public string? Twitter { get; set; }
-    
+
     [Url]
-    [Display(Name="URL to code of conduct")]
+    [Display(Name = "URL to code of conduct")]
     public string? CodeOfConductUrl { get; set; }
 
     public bool IsOnline { get; set; }
