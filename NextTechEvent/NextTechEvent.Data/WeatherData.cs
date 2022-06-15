@@ -2,7 +2,7 @@
 
 namespace NextTechEvent.Data;
 
-public struct WeatherData
+public class WeatherData
 {
     [TimeSeriesValue(0)]
     public double Minimum { get; set; }

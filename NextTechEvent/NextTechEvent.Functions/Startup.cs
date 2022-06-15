@@ -28,7 +28,7 @@ namespace NextTechEvent.Function
                 };
 
                 store.Initialize();
-                store.TimeSeries.Register<Conference, WeatherData>("Weather");
+                store.TimeSeries.Register<Conference, WeatherData>();
                 return store;
             });
 

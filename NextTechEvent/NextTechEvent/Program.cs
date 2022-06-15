@@ -22,6 +22,7 @@ builder.Services.AddSingleton<IDocumentStore>(ctx =>
     };
     store.Initialize();
     store.TimeSeries.Register<Conference, WeatherData>();
+    store.ExecuteIndexAsync(new ConferencesByWeather());
     return store;
 });
 

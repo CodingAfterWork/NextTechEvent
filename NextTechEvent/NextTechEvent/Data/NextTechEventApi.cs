@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Client.Documents.Session.TimeSeries;
 
 namespace NextTechEvent.Data
 {
@@ -11,6 +12,7 @@ namespace NextTechEvent.Data
         Task<Conference> SaveConferenceAsync(Conference conference);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
+        Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId);
     }
 
     public class NextTechEventApi : INextTechEventApi
@@ -69,5 +71,11 @@ namespace NextTechEvent.Data
             return new ItemsProviderResult<Conference>(confs, stats.TotalResults);
         }
 
+        public async Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            TimeSeriesEntry<WeatherData>[] val = await session.TimeSeriesFor<WeatherData>(conferenceId).GetAsync();
+            return val;
+        }
     }
 }

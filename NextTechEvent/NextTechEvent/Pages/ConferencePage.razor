@@ -18,7 +18,7 @@
     protected override async Task OnParametersSetAsync()
     {
         conference = await _api.GetConferenceAsync(ConferenceId);
-        
+        var weather = await _api.GetWeatherTimeSeriesAsync(ConferenceId);
         await  base.OnParametersSetAsync();
     }
 }

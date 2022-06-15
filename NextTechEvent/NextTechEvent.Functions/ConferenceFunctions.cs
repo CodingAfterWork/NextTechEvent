@@ -91,7 +91,7 @@ public class ConferenceFunctions
 
                     if (weatherroot.results.Any())
                     {
-                        var tsf = session.TimeSeriesFor<WeatherData>(item, "WeatherData");
+                        var tsf = session.TimeSeriesFor<WeatherData>(item.Id);
                         foreach (var temp in weatherroot.results)
                         {
                             tsf.Append(temp.date.Date, new WeatherData
