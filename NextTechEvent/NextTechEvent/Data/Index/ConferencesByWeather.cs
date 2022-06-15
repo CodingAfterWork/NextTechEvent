@@ -1,6 +1,6 @@
 ﻿using Raven.Client.Documents.Indexes.TimeSeries;
 
-namespace NextTechEvent.Data
+namespace NextTechEvent.Data.Index
 {
     public class ConferencesByWeather : AbstractMultiMapTimeSeriesIndexCreationTask
     {
@@ -20,7 +20,7 @@ namespace NextTechEvent.Data
                                   Average = entry.Values[2],
                                   entry.Timestamp,
                                   ConferenceId = ts.DocumentId,
-                                  Name = conference.Name,
+                                  conference.Name,
                                   conference.CfpStartDate,
                                   conference.CfpEndDate,
                                   conference.EventStart,

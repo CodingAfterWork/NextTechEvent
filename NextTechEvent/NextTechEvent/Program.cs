@@ -1,5 +1,6 @@
 using Blazm.Components;
 using NextTechEvent.Data;
+using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
 using System.Security.Cryptography.X509Certificates;
 
