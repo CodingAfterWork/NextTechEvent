@@ -1,5 +1,6 @@
 ﻿@page "/conferences/{*ConferenceId}"
 @using System.Globalization
+@using Raven.Client.Documents.Session.TimeSeries
 
 @inject INextTechEventApi _api
 
@@ -7,6 +8,15 @@
 {    <h1>@conference.Name</h1>
     <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
     <h3>@conference.City</h3>
+    if(weather!=null)
+    {
+        <ul>
+        @foreach (var temp in weather)
+        {
+            <li>@temp.Timestamp.ToString("yyyy-MM-dd") @temp.Value.Average.ToString("N1",culture)</li>
+        }
+        </ul>
+    }
 }
 
 @code{
@@ -14,11 +24,12 @@
     public string ConferenceId { get; set; }
     Conference? conference = null;
     CultureInfo culture=CultureInfo.GetCultureInfo("en-US");
+    TimeSeriesEntry<WeatherData>[] weather = null;
 
     protected override async Task OnParametersSetAsync()
     {
         conference = await _api.GetConferenceAsync(ConferenceId);
-        var weather = await _api.GetWeatherTimeSeriesAsync(ConferenceId);
+        weather = await _api.GetWeatherTimeSeriesAsync(ConferenceId);
         await  base.OnParametersSetAsync();
     }
 }

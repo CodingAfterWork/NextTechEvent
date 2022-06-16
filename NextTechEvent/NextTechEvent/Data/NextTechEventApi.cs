@@ -13,6 +13,7 @@ namespace NextTechEvent.Data
         ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request);
         ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
         Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId);
+        Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp);
     }
 
     public class NextTechEventApi : INextTechEventApi
@@ -71,9 +72,17 @@ namespace NextTechEvent.Data
             return new ItemsProviderResult<Conference>(confs, stats.TotalResults);
         }
 
+        public async Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+
+            return await session.Query<ConferenceWeather>("ConferencesByWeather").Where(c => c.Average > averageTemp).ToListAsync();
+        }
+
         public async Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
+
             TimeSeriesEntry<WeatherData>[] val = await session.TimeSeriesFor<WeatherData>(conferenceId).GetAsync();
             return val;
         }
