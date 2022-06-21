@@ -37,7 +37,8 @@ public class ConferenceFunctions
         //await UpdateSessionizeConferences(log);
         //await UpdateJoindInConferences(log);
         //await UpdateConfsTechConferences(log);
-        await UpdateLocation(log);
+        await UpdatePaperCallConferences(log);
+        //await UpdateLocation(log);
     }
 
     public async Task UpdateLocation(ILogger log)
@@ -310,7 +311,7 @@ public class ConferenceFunctions
 
     public async Task UpdateConfsTechConferences(ILogger log)
     {
-        //Get al conferences since this may contain confs from other sources
+        //Get all conferences since this may contain confs from other sources
         using IDocumentSession session = _store.OpenSession();
         var conflist = session.Query<Conference>().ToList();
 
@@ -392,6 +393,124 @@ public class ConferenceFunctions
         }
         session.SaveChanges();
     }
+
+    public async Task UpdatePaperCallConferences(ILogger log)
+    {
+        //GetAllPreviousURLs
+        using IDocumentSession session = _store.OpenSession();
+
+        var conflist = session.Query<Conference>().Where(c => c.Source == "Papercall").ToList();
+
+        string cfpstarttime;
+        DateTime? cfpstartdate = null;
+        string cfpendtime;
+        DateTime? cfpenddate = null;
+        DateTime startdate;
+        DateTime enddate;
+
+        var currentpage = 1;
+        while (true)
+        {
+
+            var html = await _client.GetStringAsync("https://www.papercall.io/events?page=" + currentpage);
+
+            var links = Regex.Matches(html, "<a href=\"https://www.papercall.io/(.*?)\"");
+
+            var conferences = links.Select(l => "https://www.papercall.io/" + l.Groups[1].Value).Distinct();
+            if (conferences.Count() == 0)
+            {
+                break;
+            }
+            else
+            {
+                currentpage++;
+            }
+
+            log.LogInformation("Got " + conferences.Count() + " conferences (page: " + currentpage + ")");
+            //Add stuff
+            foreach (var c in conferences)
+            {
+                try
+                {
+                    if (!conflist.Any(item => item.Identifier == c))
+                    {
+                        var eventhtml = await _client.GetStringAsync(c);
+                        //Name
+                        var name = Regex.Match(eventhtml, "<h1 class=\"subheader__title\">(.*?)</h1>").Groups[1].Value;
+                        //Url
+                        var url = Regex.Match(eventhtml, "<a target=\"_blank\" href=\"(.*?)\">(.*?)</a>", RegexOptions.Multiline).Groups[1].Value;
+
+                        var monthregexp = "(January|February|March|April|May|June|July|August|September|October|November|December)";
+                        var adressanddates = Regex.Match(eventhtml, "<h1 class=\"subheader__subtitle\">(.*?) (January|February|March|April|May|June|July|August|September|October|November|December) (\\d{2}), (\\d{4}), (January|February|March|April|May|June|July|August|September|October|November|December) (\\d{2}), (\\d{4})", RegexOptions.Singleline);
+
+                        try
+                        {
+
+                            ////Location
+                            if (adressanddates.Length == 0)
+                            {   //Try with one day
+                                adressanddates = Regex.Match(eventhtml, "<h1 class=\"subheader__subtitle\">(.*?) (January|February|March|April|May|June|July|August|September|October|November|December) (\\d{2}), (\\d{4})", RegexOptions.Singleline);
+                                enddate = Convert.ToDateTime($"{adressanddates.Groups[2].Value} {adressanddates.Groups[3].Value} {adressanddates.Groups[4].Value}");
+
+                            }
+                            else
+                            {
+                                enddate = Convert.ToDateTime($"{adressanddates.Groups[5].Value} {adressanddates.Groups[6].Value} {adressanddates.Groups[7].Value}");
+                            }
+                        }
+                        catch
+                        {
+                            //No date was found, probably a user group
+                            log.LogInformation(c + " Probably a user group");
+                            continue;
+                        }
+                        var fulladdress = adressanddates.Groups[1].Value;
+                        startdate = Convert.ToDateTime($"{adressanddates.Groups[2].Value} {adressanddates.Groups[3].Value} {adressanddates.Groups[4].Value}");
+
+                        var cfpend = Regex.Match(eventhtml, "<td width=\"100%\">" + monthregexp + " (\\d{2}), (\\d{4}) (\\d{2}:\\d{2}) UTC</td>");
+                        cfpenddate = Convert.ToDateTime($"{cfpend.Groups[1].Value} {cfpend.Groups[2].Value} {cfpend.Groups[3].Value} {cfpend.Groups[4].Value}z");
+                        ////Description
+                        var description = string.Join(' ', Regex.Matches(eventhtml, "<div class=\"box__content\">(.*?)</div>", RegexOptions.Singleline));
+
+                        //Tags
+                        var tagsmatches = Regex.Matches(eventhtml, """<a href="/events\?keywords=tags%3A(.*?)">(.*?)</a>""", RegexOptions.Singleline);
+                        var tags = tagsmatches.Select(t => t.Groups[2].Value).ToList();
+
+                        //Update Database
+
+                        var conference = new Conference();
+                        conference.CfpEndDate = cfpenddate;
+                        conference.CfpStartDate = cfpstartdate;
+                        conference.CfpUrl = c;
+                        conference.CreateDate = DateTime.Now;
+                        conference.Description = description;
+                        conference.EventEnd = DateOnly.FromDateTime(enddate);
+                        conference.EventStart = DateOnly.FromDateTime(startdate);
+                        conference.EventUrl = url;
+                        conference.Name = name;
+                        conference.Source = "Papercall";
+                        conference.UpdateDate = DateTime.Now;
+                        conference.Venue = Regex.Replace(fulladdress, @"\s+", string.Empty);
+                        conference.Identifier = c;
+                        conference.Tags = tags;
+                        session.Store(conference);
+                        log.LogInformation("Added " + c);
+                    }
+                    else
+                    {
+                        log.LogInformation("Already exists " + c);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.LogError(c + " " + ex.Message);
+                }
+
+            }
+        }
+        session.SaveChanges();
+    }
+
     public static Stream GenerateStreamFromString(string s)
     {
         var stream = new MemoryStream();
