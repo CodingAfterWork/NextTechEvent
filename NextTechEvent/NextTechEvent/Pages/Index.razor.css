@@ -1,31 +1,5 @@
 ﻿
-header {
-    font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    box-sizing: border-box;
-    text-align: center;
-    margin-top: -20px;
-    margin-left: -20px;
-    margin-right: -20px;    
-    color: #fff;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-position: center center;
-    background-size: cover;
-    background-image: url('https://pbs.twimg.com/profile_banners/108287008/1538754186/1500x500');
-}
 
-.intro-heading {
-    font-size: 50px;
-    font-weight: 700;
-    line-height: 50px;
-    margin-bottom: 25px;
-    font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.intro-text {
-    padding-top: 300px;
-    padding-bottom: 200px;
-}
 .bg-primary {
     background-color: #fed136 !important;
 }

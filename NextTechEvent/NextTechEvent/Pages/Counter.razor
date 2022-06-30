@@ -1,0 +1,16 @@
+﻿@using NextTechEvent.Components
+<div class="col">
+    <div class="p-3">
+        <h4 class="display-5 fw-bold text-black mb-0">
+            <AnimatedCounter Start="@(Number/2)" End="@Number" Interval="@(Number*5)" />
+        </h4>
+        <p class="mb-0">@Text</p>
+    </div>
+</div>
+@code{
+    [Parameter]
+    public int Number { get; set; }
+    [Parameter]
+    public string Text { get; set; }  
+    
+}

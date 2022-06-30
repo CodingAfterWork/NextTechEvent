@@ -1,0 +1,17 @@
+﻿<div class="col">
+    <div class="d-flex flex-column align-items-center align-items-xl-center">
+        <div class="px-3">
+            <h4>@Header</h4>
+            <p>
+                @ChildContent
+            </p>
+        </div>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public string Header { get; set; }
+}

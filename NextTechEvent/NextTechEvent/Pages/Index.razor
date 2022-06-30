@@ -4,53 +4,16 @@
 @using NextTechEvent.Components
 <PageTitle>Index</PageTitle>
 
-<header>
-    <div class="container">
-        <div class="intro-text">
 
-            <div class="intro-heading text-uppercase">
-                <span>Find your next tech event</span>
-            </div>
-        </div>
-    </div>
-</header>
-
+<Header/>
 
 <div class="container py-4 py-xl-5">
     <div class="text-center text-black-50 bg-primary border rounded border-0 p-3">
         <div class="row row-cols-2 row-cols-md-4">
-            <div class="col">
-                <div class="p-3">
-                    <h4 class="display-5 fw-bold text-black mb-0">
-                        <AnimatedCounter Start="@(opencfp/2)" End="@opencfp" Interval="@(opencfp*5)"/>
-                    </h4>
-                    <p class="mb-0">Open Call for paper</p>
-                </div>
-            </div>
-            <div class="col">
-                <div class="p-3">
-                    <h4 class="display-5 fw-bold text-black mb-0">
-                        <AnimatedCounter Start="@(upcoming/2)" End="@upcoming" Interval="@(upcoming*5)"/>
-                    </h4>
-                    <p class="mb-0">Upcoming conferences</p>
-                </div>
-            </div>
-            <div class="col">
-                <div class="p-3">
-                    <h4 class="display-5 fw-bold text-black mb-0">
-                        <AnimatedCounter Start="@(newlast7days/2)" End="@newlast7days" Interval="@(newlast7days/5)"/>
-                    </h4>
-                    <p class="mb-0">Added conferences last 7 days</p>
-                </div>
-            </div>
-            <div class="col">
-                <div class="p-3">
-                    <h4 class="display-5 fw-bold text-black mb-0">
-                        <AnimatedCounter Start="@(newlast30days/2)" End="@newlast30days" Interval="@(newlast30days*5)"/>
-                    </h4>
-                    <p class="mb-0">Added conferences last 30 days</p>
-                </div>
-            </div>
+           <Counter Number="@opencfp" Text="Open Call for paper"/>
+           <Counter Number="@upcoming" Text="Upcoming conferences"/>
+           <Counter Number="@newlast7days" Text="Added conferences last 7 days"/>
+           <Counter Number="@newlast30days" Text="Added conferences last 30 days"/>
         </div>
     </div>
 </div>
@@ -66,34 +29,20 @@
         </div>
     </div>
     <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
-        <div class="col">
-            <div class="d-flex flex-column align-items-center align-items-xl-center">
-                <div class="px-3">
-                    <h4>Speakers</h4>
-                    <p>
-                        This site contains an aggregation of many different sources for call for paper like <a href="https://sessionize.com/" target="_blank">Sessionize</a>, <a href="https://www.papercall.io/">Papercall.io</a>, <a href="https://confs.tech/">Confs.Tech</a>, <a href="https://joind.in/">Joind.in</a>
-                        It will help you as a speaker to not submit to different conferences that take place the same time (ask us how we know this is a problem).
-                        It not only aggregates information but also adds more information on top like weather forecasts.
-                    </p>
-                </div>
-            </div>
-        </div><div class="col">
-            <div class="d-flex flex-column align-items-center align-items-xl-center">
-                <div class="px-3">
-                    <h4>Attendees</h4>
-                    <p>As an attendee it will help you to find your next tech event based on location, date, and technology</p>
-                   
-                </div>
-            </div>
-        </div><div class="col">
-            <div class="d-flex flex-column align-items-center align-items-xl-center">
-                <div class="px-3">
-                    <h4>Organizers</h4>
-                    <p>As an organizer, we will help you with finding a good date to organize your event. Perhaps you are looking for a time slot when no other conferences are happening, or you might look for a time when close to when another conference is happening close by and work with that conference.</p>
-                    
-                </div>
-            </div>
-        </div>
+        
+        <Feature Header="Speaker">
+            This site contains an aggregation of many different sources for call for paper like <a href="https://sessionize.com/" target="_blank">Sessionize</a>, <a href="https://www.papercall.io/">Papercall.io</a>, <a href="https://confs.tech/">Confs.Tech</a>, <a href="https://joind.in/">Joind.in</a>
+            It will help you as a speaker to not submit to different conferences that take place the same time (ask us how we know this is a problem).
+            It not only aggregates information but also adds more information on top like weather forecasts.
+        </Feature>
+      
+        <Feature Header="Attendee">
+            As an attendee it will help you to find your next tech event based on location, date, and technology
+        </Feature>        
+     
+        <Feature Header="Organizer">
+            As an organizer, we will help you with finding a good date to organize your event. Perhaps you are looking for a time slot when no other conferences are happening, or you might look for a time when close to when another conference is happening close by and work with that conference.
+        </Feature>  
     </div>
 </div>
 

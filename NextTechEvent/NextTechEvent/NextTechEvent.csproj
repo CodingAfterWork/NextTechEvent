@@ -27,6 +27,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.0.3" />
     <PackageReference Include="Blazm.Components" Version="1.1.7" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
     <PackageReference Include="RavenDB.Client" Version="5.3.103" />
