@@ -1,21 +1,15 @@
 ﻿@page "/Speaker"
-@using Blazm.Components
-
 @inject INextTechEventApi _api
 
-<BlazmGrid ItemsProvider="_api.GetConferencesWithOpenCfpAsync">
-    <GridColumns>
-        <GridColumn Field="@nameof(Conference.Name)" >
-            <Template>
-                @{
-                    var c = (Conference)context;
-                }
+<table>
+    <Virtualize ItemsProvider="_api.GetConferencesWithOpenCfpAsync" Context="c">
+        <tr>
+            <td class="conferencename">
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
-            </Template>
-        </GridColumn>
-        <GridColumn Field="@nameof(Conference.ClosingIn)" Title="Time left"/>
-    </GridColumns>
-    <NullGridTemplate>
-        <BlazorPro.Spinkit.Circle Center="true"/>
-    </NullGridTemplate>
-</BlazmGrid>
+            </td>
+            <td>
+                @c.ClosingIn
+            </td>
+        </tr>
+    </Virtualize>
+</table>

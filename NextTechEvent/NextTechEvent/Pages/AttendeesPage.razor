@@ -1,22 +1,16 @@
 ﻿@page "/attendees"
 @using Blazm.Components
-<h1>Attendees</h1>
 @inject INextTechEventApi _api
 
-<BlazmGrid ItemsProvider="_api.GetConferencesAsync">
-    <GridColumns>
-        <GridColumn Field="@nameof(Conference.EventStart)"/>
-        <GridColumn Field="@nameof(Conference.Name)">
-            <Template>
-                @{
-                    var c = (Conference)context;
-                }
+<table>
+    <Virtualize ItemsProvider="_api.GetConferencesAsync" Context="c">
+        <tr>
+             <td>
+                @c.EventStart
+            </td>
+            <td class="conferencename">
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
-            </Template>
-        </GridColumn>
-        
-    </GridColumns>
-    <NullGridTemplate>
-        <BlazorPro.Spinkit.Circle Center="true"/>
-    </NullGridTemplate>
-</BlazmGrid>
+            </td>
+        </tr>
+    </Virtualize>
+</table>

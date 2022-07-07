@@ -1,8 +1,8 @@
 .navbar-brand {
-    color: #fed136;
+    color: var(--accent);
     font-family: "Kaushan Script", "Helvetica Neue", Helvetica, Arial, cursive;
 }
 
-a,a:visited {
-    color: #fed136;
+a, a:visited {
+    color: var(--accent);
 }

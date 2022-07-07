@@ -5,10 +5,12 @@
 @inject INextTechEventApi _api
 
 @if (conference != null)
-{    <h1>@conference.Name</h1>
+{
+    <div>
+    <h1>@conference.Name</h1>
     <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
     <h3>@conference.City</h3>
-    if(weather!=null)
+    @if(weather!=null)
     {
         <ul>
         @foreach (var temp in weather)
@@ -17,6 +19,12 @@
         }
         </ul>
     }
+        @if (conference.CfpEndDate > DateTime.Now)
+        {
+            <a href="@conference.CfpUrl">Go to call for paper</a>
+        }
+        <a href="@conference.EventUrl">Go to the conference</a>
+    </div>
 }
 
 @code{
