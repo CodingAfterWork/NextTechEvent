@@ -19,11 +19,14 @@
         }
         </ul>
     }
-        @if (conference.CfpEndDate > DateTime.Now)
+        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
         {
-            <a href="@conference.CfpUrl">Go to call for paper</a>
+            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.ClosingIn<br/>
         }
-        <a href="@conference.EventUrl">Go to the conference</a>
+        @if (!string.IsNullOrEmpty(conference.EventUrl))
+        {
+            <a href="@conference.EventUrl">Go to the conference</a>
+        }
     </div>
 }
 
