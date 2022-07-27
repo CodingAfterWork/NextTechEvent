@@ -6,6 +6,7 @@ using Raven.Client.Documents;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Raven.Client.Documents.Indexes;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -27,6 +28,8 @@ builder.Services.AddSingleton<IDocumentStore>(ctx =>
     store.Initialize();
     store.TimeSeries.Register<Conference, WeatherData>();
     store.ExecuteIndexAsync(new ConferencesByWeather());
+    new ConferenceCountByDates().Execute(store);
+
     return store;
 });
 

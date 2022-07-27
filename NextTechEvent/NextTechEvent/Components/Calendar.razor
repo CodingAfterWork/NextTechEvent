@@ -1,0 +1,29 @@
+﻿@using System.Globalization
+<table border="1">
+    <tr>
+        <th></th>
+        @for (int month = 1; month <= 12; month++)
+        {
+            <th>@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</th>
+        }
+    </tr>
+    @for (int day = 1; day <= 31; day++)
+    {
+        <tr>
+            <td>@day</td>
+            @for (int month = 1; month <= 12; month++)
+            {
+                <td>
+                    @if (DateTime.DaysInMonth(year, month) >= day)
+                    {
+                        var d = new DateTime(year, month, day).DayOfWeek;
+                        @d
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+@code {
+    int year = 2022;
+}

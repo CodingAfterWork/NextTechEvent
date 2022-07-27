@@ -95,4 +95,25 @@ public class Conference
             }
         }
     }
+
+    int _numberOfDays = 0;
+    public int NumberOfDays 
+    { 
+        get 
+        {
+            if (_numberOfDays != 0)
+            {
+                return _numberOfDays;
+            }
+            else
+            {
+                return EventEnd.DayOfYear - EventStart.DayOfYear;
+            }
+            
+        }
+        set
+        {
+            _numberOfDays = value;
+        }
+    }
 }
