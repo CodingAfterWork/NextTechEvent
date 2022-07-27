@@ -31,14 +31,14 @@ public class ConferenceFunctions
         _configuration = config;
     }
     [FunctionName("UpdateConferences")]
-    public async Task UpdateConferences([TimerTrigger("* * * * * *")] TimerInfo myTimer, ILogger log)
+    public async Task UpdateConferences([TimerTrigger("0 9,21 * * *")] TimerInfo myTimer, ILogger log)
     //public async Task UpdateConferences([TimerTrigger("0 0 */6 * * *")] TimerInfo myTimer, ILogger log)
     {
-        //await UpdateSessionizeConferences(log);
-        //await UpdateJoindInConferences(log);
-        //await UpdateConfsTechConferences(log);
+        await UpdateSessionizeConferences(log);
+        await UpdateJoindInConferences(log);
+        await UpdateConfsTechConferences(log);
         await UpdatePaperCallConferences(log);
-        //await UpdateLocation(log);
+        await UpdateLocation(log);
     }
 
     public async Task UpdateLocation(ILogger log)
