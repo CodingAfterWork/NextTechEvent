@@ -1,4 +1,7 @@
 ﻿@using System.Globalization
+@using NextTechEvent.Data.Index
+@inject INextTechEventApi _api
+
 <table border="1">
     <tr>
         <th></th>
@@ -16,8 +19,10 @@
                 <td>
                     @if (DateTime.DaysInMonth(year, month) >= day)
                     {
-                        var d = new DateTime(year, month, day).DayOfWeek;
-                        @d
+                        var d = new DateOnly(year, month, day);
+                        @d.DayOfWeek<br />
+                        <h2>@(dates.FirstOrDefault(a=>a.Date==d)?.Count)</h2>
+
                     }
                 </td>
             }
@@ -26,4 +31,14 @@
 </table>
 @code {
     int year = 2022;
+    List<ConferenceCountByDate> dates = new();
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        DateOnly start = new DateOnly(year, 1, 1);
+        DateOnly end = new DateOnly(year, 12, 31);
+        dates = await _api.GetConferenceCountByDate(start, end);
+        await base.OnParametersSetAsync();
+    }
 }

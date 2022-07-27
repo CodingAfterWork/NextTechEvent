@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Web.Virtualization;
+using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Session.TimeSeries;
@@ -14,6 +15,7 @@ namespace NextTechEvent.Data
         ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
         Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId);
         Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp);
+        Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end);
     }
 
     public class NextTechEventApi : INextTechEventApi
@@ -42,6 +44,12 @@ namespace NextTechEvent.Data
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             return await session.Query<Conference>().Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
+        }
+
+        public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start,DateOnly end)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<ConferenceCountByDate>("ConferenceCountByDates").Where(c => c.Date >=start && c.Date <= end).ToListAsync();
         }
 
         public async ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request)
