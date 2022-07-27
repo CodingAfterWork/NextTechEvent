@@ -107,7 +107,7 @@ public class Conference
             }
             else
             {
-                return EventEnd.DayOfYear - EventStart.DayOfYear;
+                return 1 + (EventEnd.DayOfYear - EventStart.DayOfYear);
             }
             
         }

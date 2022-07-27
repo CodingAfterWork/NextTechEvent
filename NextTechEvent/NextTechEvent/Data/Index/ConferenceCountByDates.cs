@@ -10,7 +10,7 @@ public class ConferenceCountByDates : AbstractIndexCreationTask<Conference, Conf
     {
         Map = cs =>
         from c in cs
-        where c.NumberOfDays < 10
+        where c.NumberOfDays < 10 && c.NumberOfDays > 0
         from d in Enumerable.Range(0, 1 + c.NumberOfDays).Cast<object>()
         select new ConferenceCountByDate()
         {
