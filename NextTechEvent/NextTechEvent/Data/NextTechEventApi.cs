@@ -3,22 +3,10 @@ using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Session.TimeSeries;
-//using InterfaceGenerator;
+using InterfaceGenerator;
 namespace NextTechEvent.Data
 {
-    public interface INextTechEventApi
-    {
-        Task<Conference> GetConferenceAsync(string id);
-        Task<List<Conference>> GetConferencesAsync();
-        Task<Conference> SaveConferenceAsync(Conference conference);
-        ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request);
-        ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request);
-        Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId);
-        Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp);
-        Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end);
-    }
-
-    //[GenerateAutoInterface]
+    [GenerateAutoInterface]
     public class NextTechEventApi : INextTechEventApi
     {
         IDocumentStore _store;
@@ -47,10 +35,10 @@ namespace NextTechEvent.Data
             return await session.Query<Conference>().Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
         }
 
-        public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start,DateOnly end)
+        public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<ConferenceCountByDate>("ConferenceCountByDates").Where(c => c.Date >=start && c.Date <= end).ToListAsync();
+            return await session.Query<ConferenceCountByDate>("ConferenceCountByDates").Where(c => c.Date >= start && c.Date <= end).ToListAsync();
         }
 
         public async ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request)

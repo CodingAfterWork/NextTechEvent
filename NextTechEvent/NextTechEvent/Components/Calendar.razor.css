@@ -1,34 +1,35 @@
-﻿/*table {
+﻿table {
     width: 90%;
     
-}*/
+}
 
-/*td {
+td {
     width: 8%;
     height: 50px;
     border: 1px solid black;
     position:relative;
     text-align:center;
 }
-*/
+
 /*Left Header*/
-/*td:first-child {
+td:first-child {
     text-align: center;
     width: 50px;
     font-size:20px;
     font-weight:900;
-}*/
+}
 
 
-/*th {
+th {
     text-align: center;
-    font-size:20px;
+    font-size: 20px;
     font-weight: 900;
-}*/
+    border: 1px solid black;
+}
 
-/*td > small {
+td > small {
     font-size: 10px;
     position: absolute;
     top: 2px;
     left: 2px;
-}*/
+}

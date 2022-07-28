@@ -20,14 +20,11 @@
                 {
                     var d = new DateOnly(year, month, day);
                     var count = dates.FirstOrDefault(a => a.Date == d)?.Count??0;
-                    @*<td style="background-color:hsl(@HeatMapColor(count))">
+                    <td style="background-color:hsla(@HeatMapColor(count))">
                         <small>@d.DayOfWeek</small>    
                         @count
-                    </td>*@
-                    <td>
-                        @*<small>@d.DayOfWeek</small>*@
-                        @count
                     </td>
+                    
                 }
                 else
                 {
@@ -57,7 +54,10 @@
         int green = 100;
 
         int h = Convert.ToByte(green -(green * val));
-        //Hue , Saturation, Luminance
-        return $"{h}, 100%, 35%";
+        if (value == 0)
+        {
+           return $"{h}, 100%,50%, 0"; 
+        }
+        return $"{h}, 100%,50%, 1";
     }
 }
