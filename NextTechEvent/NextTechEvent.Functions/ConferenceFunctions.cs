@@ -32,7 +32,7 @@ public class ConferenceFunctions
     }
     [FunctionName("UpdateConferences")]
     public async Task UpdateConferences([TimerTrigger("0 9,21 * * *")] TimerInfo myTimer, ILogger log)
-    //public async Task UpdateConferences([TimerTrigger("0 0 */6 * * *")] TimerInfo myTimer, ILogger log)
+    //public async Task UpdateConferences([TimerTrigger("* * * * * *")] TimerInfo myTimer, ILogger log)
     {
         await UpdateSessionizeConferences(log);
         await UpdateJoindInConferences(log);
@@ -46,7 +46,7 @@ public class ConferenceFunctions
         using IDocumentSession session = _store.OpenSession();
         var fromdate = DateOnly.FromDateTime(DateTime.Now);
 
-        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" /*&& c.Longitude == 0 && c.Latitude == 0 && c.AddedAddressInformation == false*/ && c.Venue != "").ToList();
+        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" && c.Longitude != 0 && c.Latitude != 0 && c.AddedAddressInformation == false && c.Venue != "").ToList();
 
         foreach (Conference item in conflist)
         {
@@ -95,7 +95,7 @@ public class ConferenceFunctions
                         var tsf = session.TimeSeriesFor<WeatherData>(item.Id);
                         foreach (var temp in weatherroot.results)
                         {
-                            tsf.Append(temp.date.ToUniversalTime().Date, new WeatherData
+                            tsf.Append(temp.date.ToUniversalTime(), new WeatherData
                             {
                                 Minimum = Convert.ToDouble(temp.temperature.minimum.value),
                                 Maximum = Convert.ToDouble(temp.temperature.maximum.value),
