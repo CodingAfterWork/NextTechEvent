@@ -16,15 +16,23 @@
             <td>@day</td>
             @for (int month = 1; month <= 12; month++)
             {
-                <td>
-                    @if (DateTime.DaysInMonth(year, month) >= day)
-                    {
-                        var d = new DateOnly(year, month, day);
-                        @d.DayOfWeek<br />
-                        <h2>@(dates.FirstOrDefault(a=>a.Date==d)?.Count)</h2>
-
-                    }
-                </td>
+                @if (DateTime.DaysInMonth(year, month) >= day)
+                {
+                    var d = new DateOnly(year, month, day);
+                    var count = dates.FirstOrDefault(a => a.Date == d)?.Count??0;
+                    @*<td style="background-color:hsl(@HeatMapColor(count))">
+                        <small>@d.DayOfWeek</small>    
+                        @count
+                    </td>*@
+                    <td>
+                        @*<small>@d.DayOfWeek</small>*@
+                        @count
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
             }
         </tr>
     }
@@ -32,13 +40,24 @@
 @code {
     int year = 2022;
     List<ConferenceCountByDate> dates = new();
-
+    int max = 1;
 
     protected override async Task OnParametersSetAsync()
     {
         DateOnly start = new DateOnly(year, 1, 1);
         DateOnly end = new DateOnly(year, 12, 31);
         dates = await _api.GetConferenceCountByDate(start, end);
+        max = dates.Max(c => c.Count);
         await base.OnParametersSetAsync();
+    }
+
+    public string HeatMapColor(decimal value)
+    {
+        decimal val = value / max;
+        int green = 100;
+
+        int h = Convert.ToByte(green -(green * val));
+        //Hue , Saturation, Luminance
+        return $"{h}, 100%, 35%";
     }
 }
