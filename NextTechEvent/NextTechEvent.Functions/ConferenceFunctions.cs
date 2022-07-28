@@ -95,7 +95,7 @@ public class ConferenceFunctions
                         var tsf = session.TimeSeriesFor<WeatherData>(item.Id);
                         foreach (var temp in weatherroot.results)
                         {
-                            tsf.Append(temp.date.Date, new WeatherData
+                            tsf.Append(temp.date.ToUniversalTime().Date, new WeatherData
                             {
                                 Minimum = Convert.ToDouble(temp.temperature.minimum.value),
                                 Maximum = Convert.ToDouble(temp.temperature.maximum.value),
