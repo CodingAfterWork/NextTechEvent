@@ -11,6 +11,7 @@
     background-position: center center;
     background-size: cover;
     background-image: url('https://pbs.twimg.com/profile_banners/108287008/1538754186/1500x500');
+    width: 100vw;
 }
 
 .intro-heading {

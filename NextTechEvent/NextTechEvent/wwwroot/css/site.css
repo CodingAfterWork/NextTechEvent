@@ -66,10 +66,7 @@ a:hover {
     color: #002fcf;
 }
 
-main {
-    display: flex;
-    justify-content: center;
-}
+
 
 .conferencename{
     width:400px;    

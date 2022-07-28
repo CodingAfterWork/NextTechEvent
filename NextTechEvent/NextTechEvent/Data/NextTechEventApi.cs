@@ -3,7 +3,7 @@ using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Session.TimeSeries;
-
+//using InterfaceGenerator;
 namespace NextTechEvent.Data
 {
     public interface INextTechEventApi
@@ -18,6 +18,7 @@ namespace NextTechEvent.Data
         Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end);
     }
 
+    //[GenerateAutoInterface]
     public class NextTechEventApi : INextTechEventApi
     {
         IDocumentStore _store;
