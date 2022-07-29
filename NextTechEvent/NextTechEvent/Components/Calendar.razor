@@ -20,7 +20,7 @@
                 {
                     var d = new DateOnly(year, month, day);
                     var count = dates.FirstOrDefault(a => a.Date == d)?.Count??0;
-                    <td style="background-color:hsla(@HeatMapColor(count))">
+                    <td class="@HeatMapColor(count)">
                         <small>@d.DayOfWeek</small>    
                         @count
                     </td>
@@ -51,13 +51,16 @@
     public string HeatMapColor(decimal value)
     {
         decimal val = value / max;
-        int green = 100;
 
-        int h = Convert.ToByte(green -(green * val));
-        if (value == 0)
+
+        return val switch
         {
-           return $"{h}, 100%,50%, 0"; 
-        }
-        return $"{h}, 100%,50%, 1";
+            0 => "Color0",
+            > 0 and <= 0.2M => "Color1",
+            > 0.2M and <= 0.4M => "Color20",
+            > 0.4M and <= 0.6M => "Color40",
+            > 0.6M and <= 0.8M => "Color60",
+            _ => "Color80"
+        };
     }
 }
