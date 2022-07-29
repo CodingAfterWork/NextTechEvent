@@ -46,7 +46,7 @@ public class ConferenceFunctions
         using IDocumentSession session = _store.OpenSession();
         var fromdate = DateOnly.FromDateTime(DateTime.Now);
 
-        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" && c.Longitude != 0 && c.Latitude != 0 && c.AddedAddressInformation == false && c.Venue != "").ToList();
+        var conflist = session.Query<Conference>().Where(c => c.EventStart > fromdate && c.Venue != "Online" && /*c.Longitude != 0 && c.Latitude != 0 &&*/ c.AddedAddressInformation == false && c.Venue != "").ToList();
 
         foreach (Conference item in conflist)
         {
