@@ -2,7 +2,15 @@
     width: 90%;
     
 }
-
+a {
+    font-size: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+h2{
+    margin-bottom:50px;
+    
+}
 td {
     width: 8%;
     height: 50px;
@@ -40,24 +48,24 @@ td > small {
 }
 
 .Color1 {
-    background-color: #e4ff7a;
+    background-color: #E4FF7A;
 }
 
 .Color20 {
-    background-color: #ffe81a;
+    background-color: #FFE81A;
 }
 
 .Color40 {
-    background-color: #ffbd00;
+    background-color: #FFC414;
 }
 
 .Color60 {
-    background-color: #ffa000;
+    background-color: #FFA000;
 }
 
 
 .Color80 {
-    background-color: #fc7f00;
+    background-color: #FF7A00;
 }
 
 

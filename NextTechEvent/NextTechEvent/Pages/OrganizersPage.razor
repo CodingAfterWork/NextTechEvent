@@ -1,4 +1,10 @@
 ﻿@page "/organizers"
+@page "/organizers/{Year:int}"
 @using NextTechEvent.Components
 
-<Calendar/>
+<Calendar Year="Year"/>
+
+@code{
+    [Parameter]
+    public int Year { get; set; }
+}

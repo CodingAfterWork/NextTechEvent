@@ -2,6 +2,11 @@
 @using NextTechEvent.Data.Index
 @inject INextTechEventApi _api
 
+
+        <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year--;await LoadAsync();})">&#60;</a>
+        <h2>@Year</h2>
+        <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year++;await LoadAsync();})">&#62;</a>
+
 <table border="1">
     <tr>
         <th></th>
@@ -16,9 +21,9 @@
             <td>@day</td>
             @for (int month = 1; month <= 12; month++)
             {
-                @if (DateTime.DaysInMonth(year, month) >= day)
+                @if (DateTime.DaysInMonth(Year, month) >= day)
                 {
-                    var d = new DateOnly(year, month, day);
+                    var d = new DateOnly(Year, month, day);
                     var count = dates.FirstOrDefault(a => a.Date == d)?.Count??0;
                     <td class="@HeatMapColor(count)">
                         <small>@d.DayOfWeek</small>    
@@ -34,18 +39,34 @@
         </tr>
     }
 </table>
+
 @code {
-    int year = 2022;
+    [Parameter]
+    public int Year { get; set; } = DateTime.Now.Year;
+
     List<ConferenceCountByDate> dates = new();
     int max = 1;
 
     protected override async Task OnParametersSetAsync()
     {
-        DateOnly start = new DateOnly(year, 1, 1);
-        DateOnly end = new DateOnly(year, 12, 31);
-        dates = await _api.GetConferenceCountByDate(start, end);
-        max = dates.Max(c => c.Count);
+        await LoadAsync();
         await base.OnParametersSetAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        if(Year==0)
+        {
+            Year=DateTime.Now.Year; 
+        }
+        
+        DateOnly start = new DateOnly(Year, 1, 1);
+        DateOnly end = new DateOnly(Year, 12, 31);
+        dates = await _api.GetConferenceCountByDate(start, end);
+        if (dates.Count > 0)
+        {
+            max = dates.Max(a => a.Count);
+        }
     }
 
     public string HeatMapColor(decimal value)
