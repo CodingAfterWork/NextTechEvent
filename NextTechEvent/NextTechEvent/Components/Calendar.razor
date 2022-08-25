@@ -2,17 +2,17 @@
 @using NextTechEvent.Data.Index
 @inject INextTechEventApi _api
 
-
-        <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year--;await LoadAsync();})">&#60;</a>
-        <h2>@Year</h2>
-        <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year++;await LoadAsync();})">&#62;</a>
-
+<div class="yearselector">
+    <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year--;await LoadAsync();})">&#60;</a>
+    <h2>@Year</h2>
+    <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year++;await LoadAsync();})">&#62;</a>
+</div>
 <table border="1">
     <tr>
         <th></th>
         @for (int month = 1; month <= 12; month++)
         {
-            <th>@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)</th>
+            <th>@CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month)</th>
         }
     </tr>
     @for (int day = 1; day <= 31; day++)

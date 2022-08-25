@@ -1,5 +1,5 @@
 ﻿table {
-    width: 90%;
+    width: 100%;
     
 }
 a {
@@ -12,11 +12,11 @@ h2{
     
 }
 td {
-    width: 8%;
-    height: 50px;
+    height: 50%;
     border: 1px solid black;
-    position:relative;
-    text-align:center;
+    position: relative;
+    text-align: center;
+    width: 7%;
 }
 
 /*Left Header*/
@@ -33,6 +33,7 @@ th {
     font-size: 20px;
     font-weight: 900;
     border: 1px solid black;
+    width: 7%;
 }
 
 td > small {
@@ -40,12 +41,23 @@ td > small {
     position: absolute;
     top: 2px;
     left: 2px;
+
 }
 
-.Color0
-{
-    
+
+.yearselector {
+    background-color: red;
+    margin: auto;
+    width: fit-content;
 }
+
+.yearselector > a, .yearselector > h2 {
+    float: left;
+    height:1rem;
+}
+
+    .Color0 {
+    }
 
 .Color1 {
     background-color: #E4FF7A;
