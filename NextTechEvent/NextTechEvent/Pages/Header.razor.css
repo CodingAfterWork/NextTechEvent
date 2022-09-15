@@ -10,8 +10,9 @@
     background-attachment: scroll;
     background-position: center center;
     background-size: cover;
-    width: 100vw;
     background-image: url('/Hero.jpg');
+
+    
 }
 
 .intro-heading {

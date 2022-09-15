@@ -1,0 +1,28 @@
+﻿@inject INextTechEventApi _api
+
+<h2>Overlapping conferences</h2>
+<table>
+    <Virtualize Items="Conferences" Context="c">
+       <tr>
+             <td>
+                @c.EventStart
+            </td>
+            <td class="conferencename">
+                <a href="@($"Conferences/{c.Id}")">@c.Name</a>
+            </td>
+        </tr>
+    </Virtualize>
+</table>
+@code
+{
+    List<Conference> Conferences = new();
+    [Parameter]
+    public DateOnly Start { get; set; }
+    [Parameter]
+    public DateOnly End { get; set; }
+    protected async override Task OnParametersSetAsync()
+    {
+        Conferences = await _api.GetConferencesAsync(Start, End);
+        await base.OnParametersSetAsync();
+    }
+}

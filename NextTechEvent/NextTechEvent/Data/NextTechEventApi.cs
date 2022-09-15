@@ -35,6 +35,13 @@ namespace NextTechEvent.Data
             return await session.Query<Conference>().Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
         }
 
+        public async Task<List<Conference>> GetConferencesAsync(DateOnly startdate, DateOnly enddate)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<Conference>().Where(c => c.EventStart>=startdate && c.EventStart<=enddate ).ToListAsync();
+        }
+       
+
         public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
