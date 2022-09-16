@@ -11,7 +11,8 @@
     background-position: center center;
     background-size: cover;
     background-image: url('/Hero.jpg');
-
+/*    grid-column-start:LeftArea;
+    grid-column-end:RightArea;*/
     
 }
 

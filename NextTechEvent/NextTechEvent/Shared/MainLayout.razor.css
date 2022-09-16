@@ -2,7 +2,6 @@ main {
     margin-top: 70px;
     padding-bottom: 50px;
     grid-area: MainArea;
-    
 }
 .page {
     display: grid;

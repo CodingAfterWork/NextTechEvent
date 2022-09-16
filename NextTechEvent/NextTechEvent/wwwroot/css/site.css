@@ -4,6 +4,13 @@
     --accent: #fed136;
 }
 
+table{
+    width:100%;
+}
+.date {
+    width:60px;
+}
+
 /*:root {
     --background: #FFFAFA;
     --font-color: #1A1201;

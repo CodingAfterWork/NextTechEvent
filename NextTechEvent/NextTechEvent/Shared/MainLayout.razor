@@ -1,14 +1,18 @@
-﻿@inherits LayoutComponentBase
+﻿@using NextTechEvent.Pages
+@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
 
 <PageTitle>NextTechEvent</PageTitle>
-
+<NavMenu />
+@if (navigationManager.Uri.Replace("#","") == navigationManager.BaseUri)
+{
+    <Header />
+}
 <div class="page">
-    
-    <NavMenu/>
     <main>
         @Body
     </main>
-
+    
 </div>
 
 
