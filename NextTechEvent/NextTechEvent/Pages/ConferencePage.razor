@@ -7,18 +7,21 @@
 @if (conference != null)
 {
     <div>
-    <h1>@conference.Name</h1>
-    <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
-    <h3>@conference.City</h3>
-    @if(weather!=null)
-    {
-        <ul>
-        @foreach (var temp in weather)
+        <h1>@conference.Name</h1>
+        <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
+        <h3>@conference.City</h3>
+        @if(weather!=null)
         {
-            <li>@temp.Timestamp.ToString("yyyy-MM-dd") @temp.Value.Average.ToString("N1",culture)</li>
+            <ul>
+            @foreach (var temp in weather)
+            {
+                <li>
+                    @temp.Timestamp.ToString("MMM dd") 
+                    @temp.Value.Average.ToString("N1",culture)
+                </li>
+            }
+            </ul>
         }
-        </ul>
-    }
         @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
         {
             <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.ClosingIn<br/>
