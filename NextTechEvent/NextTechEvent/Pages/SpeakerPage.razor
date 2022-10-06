@@ -8,7 +8,7 @@
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
             </td>
             <td class="text-end p-2">
-                @c.ClosingIn
+                @c.CfpEndDate.ToClosingIn()
             </td>
         </tr>
     </Virtualize>

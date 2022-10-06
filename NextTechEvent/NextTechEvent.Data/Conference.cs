@@ -57,45 +57,6 @@ public class Conference
 
     public bool AddedAddressInformation { get; set; } = false;
 
-    [Newtonsoft.Json.JsonIgnore]
-    public string ClosingIn
-    {
-        get
-        {
-            if (CfpEndDate != null)
-            {
-                var time = (CfpEndDate - DateTime.Now).Value;
-
-                if (time.TotalDays < 1)
-                {
-                    if (time.TotalHours < 1)
-                    {
-                        if (time.TotalSeconds < 0)
-                        {
-                            return "Closed";
-                        }
-                        else
-                        {
-                            return Math.Round(time.TotalMinutes) + " minutes";
-                        }
-                    }
-                    else
-                    {
-                        return Math.Round(time.TotalHours) + " hours";
-                    }
-                }
-                else
-                {
-                    return Math.Round(time.TotalDays) + " days";
-                }
-            }
-            else
-            {
-                return "?";
-            }
-        }
-    }
-
     int _numberOfDays = 0;
     public int NumberOfDays 
     { 

@@ -4,6 +4,9 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Session.TimeSeries;
 using InterfaceGenerator;
+using NextTechEvent.Components;
+using Raven.Client.Documents.Queries;
+
 namespace NextTechEvent.Data
 {
     [GenerateAutoInterface]
@@ -40,7 +43,16 @@ namespace NextTechEvent.Data
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             return await session.Query<Conference>().Where(c => c.EventStart>=startdate && c.EventStart<=enddate ).ToListAsync();
         }
-       
+
+            public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)
+            {
+                using IAsyncDocumentSession session = _store.OpenAsyncSession();
+
+                var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
+                .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And);
+
+                return await query.ToListAsync();
+            }
 
         public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end)
         {

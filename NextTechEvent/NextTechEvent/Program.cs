@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Raven.Client.Documents.Indexes;
+using NextTechEvent.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -29,7 +30,7 @@ builder.Services.AddSingleton<IDocumentStore>(ctx =>
     store.TimeSeries.Register<Conference, WeatherData>();
     store.ExecuteIndexAsync(new ConferencesByWeather());
     new ConferenceCountByDates().Execute(store);
-
+    store.ExecuteIndexAsync(new ConferenceBySearchTerm());
     return store;
 });
 

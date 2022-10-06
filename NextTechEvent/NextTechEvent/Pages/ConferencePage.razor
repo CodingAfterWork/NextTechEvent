@@ -24,13 +24,15 @@
         }
         @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
         {
-            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.ClosingIn<br/>
+            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.CfpEndDate.ToClosingIn()<br/>
         }
         @if (!string.IsNullOrEmpty(conference.EventUrl))
         {
             <a href="@conference.EventUrl">Go to the conference</a>
         }
-
+        <br /><br />
+        @string.Join(",",conference.Tags)
+        <br /><br />
         <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd"/>
     </div>
 }
