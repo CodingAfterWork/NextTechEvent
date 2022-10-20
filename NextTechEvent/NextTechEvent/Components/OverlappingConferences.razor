@@ -10,6 +10,9 @@
             <td class="conferencename">
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
             </td>
+            <td>
+                @string.Join(", ", c.Tags)
+            </td>
         </tr>
     </Virtualize>
 </table>

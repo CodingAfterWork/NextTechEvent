@@ -35,29 +35,39 @@ namespace NextTechEvent.Data
         public async Task<List<Conference>> GetConferencesAsync()
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Conference>().Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
+            return await session.Query<Conference>().Where(c =>c.NumberOfDays<10 && c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
         }
 
         public async Task<List<Conference>> GetConferencesAsync(DateOnly startdate, DateOnly enddate)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Conference>().Where(c => c.EventStart>=startdate && c.EventStart<=enddate ).ToListAsync();
+            return await session.Query<Conference>()
+                .Where(c => c.NumberOfDays < 10 &&
+                (c.EventStart>=startdate && c.EventStart<=enddate) 
+                || 
+                ( c.EventEnd>=startdate && c.EventEnd <= enddate)
+                ).ToListAsync();
         }
 
             public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)
             {
                 using IAsyncDocumentSession session = _store.OpenAsyncSession();
 
-                var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
-                .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And);
-
+            var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
+            .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And)
+            .Where(c=>c.NumberOfDays < 10);
                 return await query.ToListAsync();
             }
 
-        public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end)
+        public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end, string searchterm)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<ConferenceCountByDate>("ConferenceCountByDates").Where(c => c.Date >= start && c.Date <= end).ToListAsync();
+            var query = session.Query<ConferenceCountByDate>("ConferenceCountByDates");
+            if (!string.IsNullOrEmpty(searchterm))
+            {
+                query = query.Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And);
+            }
+            return await query.Where(c => c.Date >= start && c.Date <= end).ToListAsync();
         }
 
         public async ValueTask<ItemsProviderResult<Conference>> GetConferencesWithOpenCfpAsync(ItemsProviderRequest request)
@@ -66,7 +76,7 @@ namespace NextTechEvent.Data
             var confs =
                 await session.Query<Conference>()
                 .Statistics(out var stats)
-                .Where(c => c.CfpEndDate > DateTime.Now)
+                .Where(c => c.CfpEndDate > DateTime.Now && c.NumberOfDays < 10)
                 .OrderBy(c => c.CfpEndDate)
                 .Skip(request.StartIndex)
                 .Take(request.Count).ToListAsync();
@@ -80,7 +90,7 @@ namespace NextTechEvent.Data
             var confs =
                 await session.Query<Conference>()
                 .Statistics(out var stats)
-                .Where(c => c.EventStart > DateOnly.FromDateTime(DateTime.Now))
+                .Where(c => c.EventStart > DateOnly.FromDateTime(DateTime.Now) && c.NumberOfDays < 10)
                 .OrderBy(c => c.EventStart)
                 .Skip(request.StartIndex)
                 .Take(request.Count).ToListAsync();

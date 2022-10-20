@@ -7,6 +7,9 @@
     <h2>@Year</h2>
     <a href="#" @onclick:preventDefault @onclick="@(async()=>{Year++;await LoadAsync();})">&#62;</a>
 </div>
+
+<input type="text" placeholder="Search for conference name, city, country or tags" class="search" @bind="searchterm" @onkeypress="Search" @bind:event="oninput" />
+
 <table border="1">
     <tr>
         <th></th>
@@ -24,8 +27,8 @@
                 @if (DateTime.DaysInMonth(Year, month) >= day)
                 {
                     var d = new DateOnly(Year, month, day);
-                    var count = dates.FirstOrDefault(a => a.Date == d)?.Count??0;
-                    <td class="@HeatMapColor(count)">
+                    var count = dates.Where(a => a.Date == d).Sum(a=>a.Count);
+                    <td class="@HeatMapColor(count)" @onclick="@(()=>ShowConferences(d))">
                         <small>@d.DayOfWeek</small>    
                         @count
                     </td>
@@ -40,9 +43,24 @@
     }
 </table>
 
+@if(showConferenses)
+{
+    <OverlappingConferences Start="showConferensesDate" End="showConferensesDate" />
+}
+
 @code {
     [Parameter]
     public int Year { get; set; } = DateTime.Now.Year;
+
+    string searchterm = "";
+    async Task Search(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await LoadAsync();
+        }
+    }
+
 
     List<ConferenceCountByDate> dates = new();
     int max = 1;
@@ -62,10 +80,10 @@
         
         DateOnly start = new DateOnly(Year, 1, 1);
         DateOnly end = new DateOnly(Year, 12, 31);
-        dates = await _api.GetConferenceCountByDate(start, end);
+        dates = await _api.GetConferenceCountByDate(start, end,searchterm);
         if (dates.Count > 0)
         {
-            max = dates.Max(a => a.Count);
+            max = dates.GroupBy(d => d.Date).Max(a => a.Sum(c => c.Count));
         }
     }
 
@@ -82,5 +100,13 @@
             > 0.6M and <= 0.8M => "Color60",
             _ => "Color80"
         };
+    }
+
+    bool showConferenses = false;
+    DateOnly showConferensesDate=DateOnly.FromDateTime(DateTime.Now);
+    void ShowConferences(DateOnly date)
+    {
+        showConferensesDate = date;
+        showConferenses = true;
     }
 }

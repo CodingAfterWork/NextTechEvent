@@ -1,5 +1,4 @@
 ﻿using Raven.Client.Documents;
-using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
 
 namespace NextTechEvent.Data.Index;
@@ -15,16 +14,19 @@ public class ConferenceCountByDates : AbstractIndexCreationTask<Conference, Conf
         select new ConferenceCountByDate()
         {
             Date = c.EventStart.AddDays((int)d),
+            SearchTerm = c.Name + "," + c.City + "," + c.Country + "," + c.Venue + "," + string.Join(",", c.Tags),
             Count = 1
         };
 
         Reduce = results => from result in results
-                            group result by result.Date into g
+                            group result by new { result.Date, result.SearchTerm } into g
                             select new
                             {
-                                Date = g.Key,
+                                Date = g.Key.Date,
+                                SearchTerm = g.Key.SearchTerm,
                                 Count = g.Sum(x => x.Count)
                             };
+        Index(x => x.SearchTerm, FieldIndexing.Search);
     }
 
 }
