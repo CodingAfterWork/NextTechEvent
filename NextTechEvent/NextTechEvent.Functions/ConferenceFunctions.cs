@@ -1,4 +1,5 @@
-using Microsoft.Azure.WebJobs;
+
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using NextTechEvent.Data;
 using NextTechEvent.Functions.Data.AzureMaps;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using RvdB.Scrapionize;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,21 +26,25 @@ public class ConferenceFunctions
     IDocumentStore _store;
     HttpClient _client;
     IConfiguration _configuration;
-    public ConferenceFunctions(IDocumentStore store, HttpClient client, IConfiguration config)
+    ILogger _logger;
+
+    public ConferenceFunctions(IDocumentStore store, IHttpClientFactory factory, IConfiguration config, ILoggerFactory loggerFactory)
     {
         _store = store;
-        _client = client;
+        _client = factory.CreateClient();
         _configuration = config;
+        _logger = loggerFactory.CreateLogger<ConferenceFunctions>();
     }
-    [FunctionName("UpdateConferences")]
-    public async Task UpdateConferences([TimerTrigger("0 9,21 * * *")] TimerInfo myTimer, ILogger log)
-    //public async Task UpdateConferences([TimerTrigger("* * * * * *")] TimerInfo myTimer, ILogger log)
+    [Function("UpdateConferences")]
+    //public async Task UpdateConferences([TimerTrigger("0 9,21 * * *")] MyInfo myInfo, ILogger log)
+    public async Task UpdateConferences([TimerTrigger("* * * * * *")] MyInfo myInfo)
     {
-        await UpdateSessionizeConferences(log);
-        await UpdateJoindInConferences(log);
-        await UpdateConfsTechConferences(log);
-        await UpdatePaperCallConferences(log);
-        await UpdateLocation(log);
+        
+        await UpdateSessionizeConferences(_logger);
+        //await UpdateJoindInConferences(_logger);
+        //await UpdateConfsTechConferences(_logger);
+        //await UpdatePaperCallConferences(_logger);
+        //await UpdateLocation(_logger);
     }
 
     public async Task UpdateLocation(ILogger log)
@@ -140,7 +146,8 @@ public class ConferenceFunctions
         using (var stream = GenerateStreamFromString(xml))
         {
             var conferences = (Data.Sessionize.urlset)serializer.Deserialize(stream);
-            var openConferences = conferences.url;//.Where(c => c.priority == 0.8m);
+            var openConferences = conferences.url.Where(c => c.priority == 0.8m);
+            var scraper = new Scraper();
 
             //Add stuff
             foreach (var c in openConferences)
@@ -149,51 +156,10 @@ public class ConferenceFunctions
                 {
                     if (!conflist.Any(item => item.Identifier == c.loc))
                     {
+
                         var html = await _client.GetStringAsync(c.loc);
-                        var regexp = new Regex("<h2 class=\"no-margins\">.*?([0-9]{1,2} [a-zA-z]{3} [0-9]{4}).*?<\\/h2>", RegexOptions.Singleline);
-                        var matches = regexp.Matches(html);
+                        var sessionizeData = scraper.Scrape(new Uri(c.loc));
 
-                        var timezone = Regex.Match(html, @"This event is in \<strong\>(.*?) \(UTC([+-][0-9][0-9]:[0-9][0-9])\)\<\/strong\> timezone");
-                        var timezoneoffset = timezone.Groups[2].Value;
-                        var timezoneoffsethours = -1 * int.Parse(timezoneoffset.Substring(0, 3));
-                        var timezoneoffsetminutes = int.Parse(timezoneoffset.Substring(4, 2));
-
-                        if (matches.Count == 4)
-                        {
-                            cfpstarttime = Regex.Match(html, @"CfS opens at (\d+:\d+ (A|P)M)<\/span>").Groups[1].Value;
-                            cfpstartdate = DateTime.ParseExact(matches[2].Groups[1].Value + " " + cfpstarttime.PadLeft(8, '0'), "dd MMM yyyy hh:mm tt", CultureInfo.InvariantCulture);
-                            cfpendtime = Regex.Match(html, @"CfS closes at (\d+:\d+ (A|P)M)<\/span>").Groups[1].Value;
-                            cfpenddate = DateTime.ParseExact(matches[3].Groups[1].Value + " " + cfpendtime.PadLeft(8, '0'), "dd MMM yyyy hh:mm tt", CultureInfo.InvariantCulture);
-                            startdate = DateOnly.ParseExact(matches[0].Groups[1].Value, "d MMM yyyy", CultureInfo.InvariantCulture);
-                            enddate = DateOnly.ParseExact(matches[1].Groups[1].Value, "d MMM yyyy", CultureInfo.InvariantCulture);
-                        }
-                        else if (matches.Count == 3) //One day event and user groups
-                        {
-                            try
-                            {
-                                cfpstarttime = Regex.Match(html, @"CfS opens at (\d+:\d+ (A|P)M)<\/span>").Groups[1].Value;
-                                cfpstartdate = DateTime.ParseExact(matches[1].Groups[1].Value + " " + cfpstarttime.PadLeft(8, '0'), "d MMM yyyy hh:mm tt", CultureInfo.InvariantCulture);
-                                cfpendtime = Regex.Match(html, @"CfS closes at (\d+:\d+ (A|P)M)<\/span>").Groups[1].Value;
-                                cfpenddate = DateTime.ParseExact(matches[2].Groups[1].Value + " " + cfpendtime.PadLeft(8, '0'), "d MMM yyyy hh:mm tt", CultureInfo.InvariantCulture);
-                                startdate = DateOnly.ParseExact(matches[0].Groups[1].Value, "d MMM yyyy", CultureInfo.InvariantCulture);
-                                enddate = startdate;
-                            }
-                            catch
-                            {
-                                continue;
-                                //If we can't parse the dates, we skip the conference
-                            }
-                        }
-                        else
-                        {
-                            Debug.WriteLine(c.loc);
-                            continue;
-                            //We are looking for atleast 3 dates, if only two are present something is off, like a user group not added their next event.
-                        }
-                        //Name
-                        var name = Regex.Match(html, @"<h4>(.*?)</h4>").Groups[1].Value;
-                        //Url
-                        var url = Regex.Match(html, "<a href=\"(.*?)\" class=\"navy-link\" target=\"_blank\"", RegexOptions.Multiline).Groups[1].Value;
                         //Location
                         var addresses = Regex.Matches(html, "<span class=\"block\">(.*?)</span>");
                         var fulladdress = string.Join(',', addresses.Select(a => a.Groups[1].Value));
@@ -204,17 +170,17 @@ public class ConferenceFunctions
 
                         //Update Database
                         var conference = new Conference();
-                        conference.Name = HttpUtility.HtmlDecode(name);
-                        conference.CfpEndDate = cfpenddate.AddHours(timezoneoffsethours);
-                        conference.CfpStartDate = cfpstartdate.AddHours(timezoneoffsethours);
+                        conference.Name = sessionizeData.EventName;
+                        conference.CfpStartDate = sessionizeData.CfpStartDate;// cfpstartdate.AddHours(timezoneoffsethours);
+                        conference.CfpEndDate = sessionizeData.CfpEndDate; //cfpenddate.AddHours(timezoneoffsethours);
                         conference.CfpUrl = c.loc;
                         conference.ImageUrl = imageUrl;
                         conference.CreateDate = DateTime.Now;
                         conference.Description = description;
-                        conference.EventEnd = enddate;
-                        conference.EventStart = startdate;
-                        conference.EventUrl = url;
-                        conference.IsOnline = c.loc.ToLower().Contains("online");
+                        conference.EventStart = DateOnly.FromDateTime(sessionizeData.EventStartDate);
+                        conference.EventEnd = DateOnly.FromDateTime(sessionizeData.EventEndDate); //enddate;
+                        conference.EventUrl = sessionizeData.EventUrl;
+                        conference.IsOnline = sessionizeData.Location.Contains("online");
                         conference.Source = "Sessionize";
                         conference.UpdateDate = DateTime.Now;
                         conference.Venue = HttpUtility.HtmlDecode(fulladdress.Trim(','));
@@ -228,7 +194,10 @@ public class ConferenceFunctions
 
                     }
                 }
-                catch { /*Do nothing*/}
+                catch (Exception ex) 
+                {
+                    log.Log(LogLevel.Error, ex.Message);
+                }
             }
             session.SaveChanges();
         }
@@ -520,4 +489,20 @@ public class ConferenceFunctions
         stream.Position = 0;
         return stream;
     }
+}
+
+public class MyInfo
+{
+    public MyScheduleStatus ScheduleStatus { get; set; }
+
+    public bool IsPastDue { get; set; }
+}
+
+public class MyScheduleStatus
+{
+    public DateTime Last { get; set; }
+
+    public DateTime Next { get; set; }
+
+    public DateTime LastUpdated { get; set; }
 }
