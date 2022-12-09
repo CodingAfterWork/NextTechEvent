@@ -47,6 +47,19 @@ public class Conference
     [Display(Name = "What is the Twitter handle of the event?")]
     public string? Twitter { get; set; }
 
+    [Display(Name = "What is the LinkedIn handle of the event?")]
+    public string? LinkedIn { get; set; }
+
+    [Display(Name = "What is the Facebook handle of the event?")]
+    public string? Facebook { get; set; }
+
+    [Display(Name = "What is the Instagram handle of the event?")]
+    public string? Instagram { get; set; }
+
+    public bool? ConferenceFeeCovered { get; set; }
+    public bool? AccomodationCovered { get; set; }
+    public bool? TravelCovered { get; set; }
+
     [Url]
     [Display(Name = "URL to code of conduct")]
     public string? CodeOfConductUrl { get; set; }
