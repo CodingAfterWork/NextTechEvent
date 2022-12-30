@@ -8,6 +8,7 @@
 {
     <div>
         <h1>@conference.Name</h1>
+        <ConferenceStatus ConferenceId="@conference.Id"/>
         <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
         <h3>@conference.City</h3>
         @if(weather!=null)

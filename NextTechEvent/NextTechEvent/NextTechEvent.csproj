@@ -30,6 +30,7 @@
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.0.4" />
     <PackageReference Include="Blazm.Components" Version="1.1.7" />
     <PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
+    <PackageReference Include="Ical.Net" Version="4.2.0" />
     <PackageReference Include="InterfaceGenerator" Version="1.0.13">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

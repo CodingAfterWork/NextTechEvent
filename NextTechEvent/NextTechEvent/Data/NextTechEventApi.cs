@@ -25,6 +25,33 @@ namespace NextTechEvent.Data
             await session.SaveChangesAsync();
             return conference;
         }
+        
+        public async Task<Status> SaveStatusAsync(Status status)
+        {
+            var savedstatus = await GetStatusAsync(status.ConferenceId, status.UserId);
+            if (savedstatus != null)
+            {
+                status.Id = savedstatus.Id;
+            }
+
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            await session.StoreAsync(status);
+            await session.SaveChangesAsync();
+            return status;
+        }
+
+        public async Task<Status> GetStatusAsync(string conferenceId,string userId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<Status>().Where(c => c.ConferenceId == conferenceId && c.UserId==userId).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<ConferenceUserStatus>> GetConferenceUserStatusAsync(string userId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<ConferenceUserStatus>("ConferenceWithUserStatus").Where(c => c.UserId == userId).ToListAsync();
+        }
+
 
         public async Task<Conference> GetConferenceAsync(string id)
         {

@@ -1,0 +1,49 @@
+﻿@inject INextTechEventApi _api
+
+@if (Status != null)
+{
+    <InputSelect @bind-Value="   Status.State" @bind-Value:after="SaveState">
+        @foreach (var e in Enum.GetValues(typeof(StateEnum)))
+        {
+            <option value="@e">@e</option>
+        }
+    </InputSelect>
+}
+
+@code {
+    [Parameter]
+    public required string ConferenceId { get; set; }
+    public Status? Status { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (user?.Identity?.Name!=null && user.Identity.IsAuthenticated)
+        {
+            var savedstatus = await _api.GetStatusAsync(ConferenceId, user.Identity.Name);
+            if (savedstatus != null)
+            {
+                Status = savedstatus;
+            }
+            else
+            {
+                Status = new() { ConferenceId = ConferenceId, State = StateEnum.NotSet, UserId = user.Identity.Name };
+            }
+        }
+        await  base.OnParametersSetAsync();
+    }
+
+    public async Task SaveState()
+    {
+        if (Status != null)
+        {
+            await _api.SaveStatusAsync(Status);
+        }
+    }
+}
