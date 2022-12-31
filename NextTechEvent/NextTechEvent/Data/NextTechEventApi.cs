@@ -6,6 +6,9 @@ using Raven.Client.Documents.Session.TimeSeries;
 using InterfaceGenerator;
 using NextTechEvent.Components;
 using Raven.Client.Documents.Queries;
+using Ical.Net.CalendarComponents;
+using Ical.Net.DataTypes;
+using NPOI.SS.Formula.Functions;
 
 namespace NextTechEvent.Data
 {
@@ -46,10 +49,32 @@ namespace NextTechEvent.Data
             return await session.Query<Status>().Where(c => c.ConferenceId == conferenceId && c.UserId==userId).FirstOrDefaultAsync();
         }
 
-        public async Task<List<ConferenceUserStatus>> GetConferenceUserStatusAsync(string userId)
+        public async Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<ConferenceUserStatus>("ConferenceWithUserStatus").Where(c => c.UserId == userId).ToListAsync();
+            var data=await session.Query<Status>()
+                .Include(c => c.ConferenceId)
+                .Where(c => c.UserId == userId && c.State != StateEnum.NotSet && c.State != StateEnum.Rejected)
+                .ToListAsync();
+            
+            var calendar = new Ical.Net.Calendar();
+            calendar.Name = "NextTechEvent";
+            foreach (var s in data)
+            {
+                var conference = await session.LoadAsync<Conference>(s.ConferenceId);
+                var e = new CalendarEvent
+                {
+                    Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
+                    End = new CalDateTime(conference.EventEnd.ToDateTime(new TimeOnly(0, 0))),
+                    IsAllDay = true,
+                    Summary = $"{s.State} {conference.Name}",
+                    Description = $"https://nexttechevent.azurewebsites.net/Conferences/{s.ConferenceId}"
+                };
+
+
+                calendar.Events.Add(e);
+            }
+            return calendar;
         }
 
 
