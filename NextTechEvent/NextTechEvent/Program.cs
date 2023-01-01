@@ -91,8 +91,10 @@ app.MapGet("calendar", async (string userid, string token, INextTechEventApi api
     var calendar = await api.GetUserCalendarAsync(userid);
    
     var serializer = new CalendarSerializer();
-    var serializedCalendar = serializer.SerializeToString(calendar);
-    return Results.Json(serializedCalendar, contentType:"text/calendar");
+    MemoryStream ms = new MemoryStream();
+    serializer.Serialize(calendar,ms,System.Text.Encoding.UTF8);
+    ms.Position = 0;
+    return Results.Stream(ms, contentType:"text/calendar");
 
 });
 
