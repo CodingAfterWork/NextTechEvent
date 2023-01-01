@@ -89,12 +89,12 @@ app.MapGet("logout", async (HttpContext context) =>
 app.MapGet("calendar", async (string userid, string token, INextTechEventApi api) =>
 {
     var calendar = await api.GetUserCalendarAsync(userid);
-   
-    var serializer = new CalendarSerializer();
+
+    CalendarSerializer serializer = new ();
     MemoryStream ms = new MemoryStream();
     serializer.Serialize(calendar,ms,System.Text.Encoding.UTF8);
     ms.Position = 0;
-    return Results.Stream(ms, contentType:"text/calendar");
+    return Results.Stream(ms, contentType:"text/calendar","NextTechEvent.ics");
 
 });
 
