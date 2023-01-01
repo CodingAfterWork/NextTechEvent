@@ -71,7 +71,7 @@ namespace NextTechEvent.Data
                     Uid = conference.Id,
                     Location = $"{conference.Venue}, {conference.City}, {conference.Country}",
                     Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
-                    End = new CalDateTime(conference.EventEnd.ToDateTime(new TimeOnly(23, 59))),
+                    End = new CalDateTime(conference.EventEnd.AddDays(1).ToDateTime(new TimeOnly(23, 59))),
                     IsAllDay=true,
                     Summary = $"{conference.Name} - {s.State}",
                     Status = s.State == StateEnum.Accepted ? "CONFIRMED" : "TENTATIVE",
