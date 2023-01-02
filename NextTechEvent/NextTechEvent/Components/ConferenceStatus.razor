@@ -26,14 +26,15 @@
 
         if (user?.Identity?.Name!=null && user.Identity.IsAuthenticated)
         {
-            var savedstatus = await _api.GetStatusAsync(ConferenceId, user.Identity.Name);
+            var id = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+            var savedstatus = await _api.GetStatusAsync(ConferenceId, id);
             if (savedstatus != null)
             {
                 Status = savedstatus;
             }
             else
             {
-                Status = new() { ConferenceId = ConferenceId, State = StateEnum.NotSet, UserId = user.Identity.Name };
+                Status = new() { ConferenceId = ConferenceId, State = StateEnum.NotSet, UserId = id };
             }
         }
         await  base.OnParametersSetAsync();

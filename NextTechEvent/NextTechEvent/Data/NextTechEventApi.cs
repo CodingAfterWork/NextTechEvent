@@ -43,10 +43,41 @@ namespace NextTechEvent.Data
             return status;
         }
 
+        
+        public async Task<Calendar> SaveCalendarAsync(Calendar item)
+        {
+            if(item.Id==null)
+            {
+                item.Id = Guid.NewGuid().ToString().Replace("-", "");
+            }
+
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            await session.StoreAsync(item);
+            await session.SaveChangesAsync();
+            return item;
+        }
+
+
+
         public async Task<Status> GetStatusAsync(string conferenceId,string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             return await session.Query<Status>().Where(c => c.ConferenceId == conferenceId && c.UserId==userId).FirstOrDefaultAsync();
+        }
+
+
+        public async Task<Calendar?> GetCalendarAsync(string id)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<Calendar>().Where(c => c.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Calendar?> GetCalendarByUserIdAsync(string userId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            var calendar = await session.Query<Calendar>().Where(c => c.UserId == userId ).FirstOrDefaultAsync();
+
+            return calendar;
         }
 
         public async Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)

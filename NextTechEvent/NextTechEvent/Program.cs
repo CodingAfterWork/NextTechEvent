@@ -86,9 +86,11 @@ app.MapGet("logout", async (HttpContext context) =>
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 });
 
-app.MapGet("calendar", async (string userid, string token, INextTechEventApi api) =>
+
+app.MapGet("calendar/{id}", async (string id, INextTechEventApi api) =>
 {
-    var calendar = await api.GetUserCalendarAsync(userid);
+    var ntecalendar = await api.GetCalendarAsync(id);
+    var calendar = await api.GetUserCalendarAsync(ntecalendar.UserId);
 
     CalendarSerializer serializer = new ();
     MemoryStream ms = new MemoryStream();

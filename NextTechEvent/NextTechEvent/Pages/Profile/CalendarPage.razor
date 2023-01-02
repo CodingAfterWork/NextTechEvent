@@ -1,0 +1,55 @@
+﻿@page "/Profile/Calendar"
+@inject NavigationManager navigation
+@inject INextTechEventApi _api
+@if (Calendar!=null)
+{
+    <EditForm Model="Calendar" OnSubmit="Save">
+        @if (Calendar.Id != null)
+        {
+            <BlazmInputText LabelText="Calendar Url" @bind-Value="Url" Disabled="true" />
+        }
+        <br/>
+        <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Calendar.SessionizeCalendarUrl" />
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+}
+else
+{
+    <button @onclick="()=>{Calendar=new();}">Activate calendar</button>
+}
+
+@code {
+    public NextTechEvent.Data.Calendar? Calendar { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    public string Url { get; set; } = "";
+    protected override async Task OnInitializedAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        var id = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+        Calendar = await _api.GetCalendarByUserIdAsync(id);
+        UpdateUrl();
+    }
+
+    public async Task Save()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;  
+        Calendar.UserId = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+        Calendar = await _api.SaveCalendarAsync(Calendar);
+        UpdateUrl();
+    }
+
+    private void UpdateUrl()
+    {
+        if (Calendar != null)
+        {
+            Url = $"{navigation.BaseUri}Calendar/{Calendar.Id}";
+        }
+    }
+    
+}

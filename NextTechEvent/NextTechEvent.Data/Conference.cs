@@ -5,12 +5,12 @@ namespace NextTechEvent.Data;
 
 public class Conference
 {
-    public string Id { get; set; }
+    public string? Id { get; set; }
     [Required, MinLength(3)]
     [Display(Name = "Conference name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
     [Url]
-    public string ImageUrl { get; set; }
+    public string ImageUrl { get; set; } = "";
     [Url]
     [Display(Name = "Call for paper URL")]
     public string? CfpUrl { get; set; }
@@ -20,7 +20,7 @@ public class Conference
     public DateTime? CfpEndDate { get; set; } = DateTime.Now;
     [Url]
     [Display(Name = "Event URL")]
-    public string EventUrl { get; set; }
+    public string EventUrl { get; set; } = "";
     [MustBeFutureDate]
     [Display(Name = "When does the event start?")]
     public DateOnly EventStart { get; set; } = DateOnly.FromDateTime(DateTime.Now);
@@ -28,18 +28,18 @@ public class Conference
     [MustBeFutureDate]
     public DateOnly EventEnd { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     [Display(Name = "Where is the event?")]
-    public string Venue { get; set; }
+    public string Venue { get; set; } = "";
     [Display(Name = "What country is the event in?")]
-    public string Country { get; set; }
+    public string Country { get; set; } = "";
     [Display(Name = "What city is the event in?")]
-    public string City { get; set; }
+    public string City { get; set; } = "";
     [Display(Name = "What is the event about?")]
-    public string Description { get; set; }
+    public string Description { get; set; } = "";
     public DateTime CreateDate { get; set; }
     public DateTime UpdateDate { get; set; }
 
-    public string Identifier { get; set; }
-    public string Source { get; set; }
+    public string Identifier { get; set; } = "";
+    public string Source { get; set; } = "";
 
     public double Longitude { get; set; }
     public double Latitude { get; set; }
