@@ -2,7 +2,7 @@
 
 @if (Status != null)
 {
-    <InputSelect @bind-Value="   Status.State" @bind-Value:after="SaveState">
+    <InputSelect @bind-Value="Status.State" @bind-Value:after="SaveState">
         @foreach (var e in Enum.GetValues(typeof(StateEnum)))
         {
             <option value="@e">@e</option>

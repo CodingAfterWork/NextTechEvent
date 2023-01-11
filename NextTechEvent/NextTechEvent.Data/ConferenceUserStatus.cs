@@ -8,10 +8,9 @@ namespace NextTechEvent.Data;
 
 public class ConferenceUserStatus
 {
-    public string ConferenceName { get; set; }
     public string UserId { get; set; }
     public StateEnum State { get; set; }
-    public string ConferenceId { get; set; }
+    public string ConferenceName { get; set; }
     public DateOnly EventStart { get; set; }
-    public DateOnly EventEnd { get; set; }
+    public string ConferenceId { get; set; }    
 }

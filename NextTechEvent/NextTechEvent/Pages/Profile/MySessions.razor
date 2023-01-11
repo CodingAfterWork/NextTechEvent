@@ -1,0 +1,40 @@
+﻿@page "/Profile/MySessions"
+@inject NavigationManager navigation
+@inject INextTechEventApi _api
+
+<h3>My sessions</h3>
+<table>
+    <Virtualize Items="conferences" Context="c">
+        <tr>
+            <td class="date p-2">
+                @c.EventStart
+            </td>
+            <td class="conferencename">
+                <a href="@($"Conferences/{c.ConferenceId}")">@c.ConferenceName</a>
+            </td>
+            <td>
+                @c.State
+            </td>
+        </tr>
+    </Virtualize>
+</table>
+
+@code {
+    List<ConferenceUserStatus> conferences = new List<ConferenceUserStatus>();
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        var id = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+        conferences = await _api.GetConferencesByUserIdAsync(id);
+        await base.OnInitializedAsync();
+    }
+
+
+}
+
+
+    

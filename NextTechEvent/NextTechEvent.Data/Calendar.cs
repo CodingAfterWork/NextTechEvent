@@ -8,7 +8,7 @@ namespace NextTechEvent.Data
 {
     public class Calendar
     {
-        public string? UserId { get; set; }
+        public required string UserId { get; set; }
         public string? SessionizeCalendarUrl { get; set; }
         public string? Id { get; set; }
     }

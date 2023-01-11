@@ -16,7 +16,7 @@
 }
 else
 {
-    <button @onclick="()=>{Calendar=new();}">Activate calendar</button>
+    <button @onclick="EnableCalendarAsync">Activate calendar</button>
 }
 
 @code {
@@ -34,13 +34,33 @@ else
         UpdateUrl();
     }
 
-    public async Task Save()
+    private async Task EnableCalendarAsync()
     {
         ArgumentNullException.ThrowIfNull(authenticationStateTask);
         var authState = await authenticationStateTask;
-        var user = authState.User;  
-        Calendar.UserId = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
-        Calendar = await _api.SaveCalendarAsync(Calendar);
+        var user = authState.User;
+        var userId = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+        if (userId != null)
+        {
+            Calendar = new()
+            {
+                UserId = userId
+            };
+        }
+    }
+
+    public async Task Save()
+    {
+        
+        if (Calendar != null)
+        {
+            Calendar = await _api.SaveCalendarAsync(Calendar);
+            if(!string.IsNullOrEmpty(Calendar.SessionizeCalendarUrl))
+            {
+                //Download the calendar from Sessionize and sync
+                await _api.UpdateStatusBasedOnSessionizeCalendarAsync(Calendar);
+            }
+        }
         UpdateUrl();
     }
 

@@ -9,6 +9,7 @@ using Raven.Client.Documents.Queries;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using NPOI.SS.Formula.Functions;
+using Raven.Client.Documents.Operations;
 
 namespace NextTechEvent.Data
 {
@@ -16,9 +17,11 @@ namespace NextTechEvent.Data
     public class NextTechEventApi : INextTechEventApi
     {
         IDocumentStore _store;
-        public NextTechEventApi(IDocumentStore store)
+        IHttpClientFactory _factory;
+        public NextTechEventApi(IDocumentStore store,IHttpClientFactory factory)
         {
             _store = store;
+            _factory = factory;
         }
 
         public async Task<Conference> SaveConferenceAsync(Conference conference)
@@ -80,6 +83,77 @@ namespace NextTechEvent.Data
             return calendar;
         }
 
+        public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Calendar calendar)
+        {
+            var calendarcontent=await _factory.CreateClient().GetStringAsync(calendar.SessionizeCalendarUrl);
+            var sessionizecalendar =Ical.Net.Calendar.Load(calendarcontent);
+            foreach (CalendarEvent item in sessionizecalendar.Events.Where(i=>i.Uid.StartsWith("SZEVENT")))
+            {
+                var eventId = item.Uid.Replace("SZEVENT","");
+                var conf = await GetConferenceBySessionizeIdAsync(eventId);
+                if (conf == null || conf.Id == null)
+                    continue;
+                var status =await GetStatusAsync(conf.Id, calendar.UserId);
+                var state = GetStateFromCalendarEvent(item);
+                if (status == null || (status!=null && status.State != state))
+                {
+                    if (status == null)
+                    {
+                        
+                        
+                        status = new()
+                        {
+                            ConferenceId = conf.Id,
+                            UserId = calendar.UserId,
+                            State = state
+                        };
+
+                    }
+                    status.State = state;
+
+                    await SaveStatusAsync(status);
+                }
+            }
+
+        }
+
+        private StateEnum GetStateFromCalendarEvent(CalendarEvent item)
+        {
+            switch (item.Status)
+            {
+                case "CONFIRMED":
+                    return StateEnum.Accepted;
+                case "TENTATIVE":
+                    return StateEnum.Submitted;
+                default:
+                    return StateEnum.NotSet;
+                    break;
+            }
+        }
+
+        public async Task<List<ConferenceUserStatus>> GetConferencesByUserIdAsync(string userId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            var data = await session.Query<Status>()
+                .Include(c => c.ConferenceId)
+                .Where(c => c.UserId == userId && c.State != StateEnum.NotSet && c.State != StateEnum.Rejected)
+                .ToListAsync();
+
+
+            List<ConferenceUserStatus> result = new();
+            foreach(var c in data)
+            {
+                result.Add(await GetConferenceUserStatus(session, c.ConferenceId, c.State));
+            }
+            return result;
+        }
+
+        private async Task <ConferenceUserStatus> GetConferenceUserStatus(IAsyncDocumentSession session, string conferenceId, StateEnum state)
+        {
+            var conference = await session.LoadAsync<Conference>(conferenceId);
+            return new() { ConferenceId = conferenceId, ConferenceName = conference.Name, EventStart = conference.EventStart, State = state };
+        }
+
         public async Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
@@ -120,6 +194,12 @@ namespace NextTechEvent.Data
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             return await session.Query<Conference>().Where(c => c.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Conference> GetConferenceBySessionizeIdAsync(string sessionizeId)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            return await session.Query<Conference>().Where(c => c.Identifier == sessionizeId && c.Source=="Sessionize").FirstOrDefaultAsync();
         }
 
         public async Task<List<Conference>> GetConferencesAsync()

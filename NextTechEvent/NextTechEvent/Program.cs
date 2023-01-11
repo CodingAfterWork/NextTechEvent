@@ -21,6 +21,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<INextTechEventApi, NextTechEventApi>();
+builder.Services.AddHttpClient();
 builder.Services.AddBlazm();
 builder.Services.AddSingleton<IDocumentStore>(ctx =>
 {
