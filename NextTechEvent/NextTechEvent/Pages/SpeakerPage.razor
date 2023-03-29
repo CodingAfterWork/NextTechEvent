@@ -1,15 +1,28 @@
 ﻿@page "/Speaker"
 @inject INextTechEventApi _api
 
-<table>
-    <Virtualize ItemsProvider="_api.GetConferencesWithOpenCfpAsync" Context="c">
-        <tr>
-            <td class="conferencename">
-                <a href="@($"Conferences/{c.Id}")">@c.Name</a>
-            </td>
-            <td class="text-end p-2">
-                @c.CfpEndDate.ToClosingIn()
-            </td>
-        </tr>
-    </Virtualize>
-</table>
+<div class="d-flex flex-wrap justify-content-center gap-4">
+        @foreach(var item in confs)
+        {
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{item.Id}")"> @item.Name</a></h5>
+                <p class="card-text">
+                    <i class="bi bi-calendar"></i> <time datetime="@(item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date"> @item.EventStart</time><br />
+                    <i class="bi bi-geo-alt"></i> <span aria-label="Conference 2 location">@item.City, @item.Country</span><br />
+                    <i class="bi bi-clock"></i>  <span aria-label="Conference 2 CFP closes in">@item.CfpEndDate.ToClosingIn()</span>
+                </p>
+            </div>
+        </div>
+        }
+</div>
+
+@code{
+    List<Conference> confs = new();
+
+    protected override async Task OnInitializedAsync() {
+        confs = (await _api.GetConferencesAsync()).Where(c => c.CfpEndDate > DateTime.Now).OrderBy(c=>c.CfpEndDate).ToList();
+        await base.OnInitializedAsync();
+    }
+
+}

@@ -3,9 +3,23 @@
 @inject INextTechEventApi _api
 
 <h3>My events</h3>
-<table>
+
+<ul class="list-group">
+    
     <Virtualize Items="conferences" Context="c">
-        <tr>
+
+        <h1 class="text-center my-4">Conference List</h1>
+      
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-md-3"><strong>Date:</strong> March 25, 2023</div>
+                    <div class="col-md-4"><strong>Name:</strong> AI Tech Summit</div>
+                    <div class="col-md-5"><strong>Location:</strong> San Francisco, USA</div>
+                </div>
+            </li>
+         
+
+        @*<tr>
             <td class="date p-2">
                 @c.EventStart
             </td>
@@ -15,9 +29,9 @@
             <td>
                 @c.State
             </td>
-        </tr>
+        </tr>*@
     </Virtualize>
-</table>
+    </ul>
 
 @code {
     List<ConferenceUserStatus> conferences = new List<ConferenceUserStatus>();
