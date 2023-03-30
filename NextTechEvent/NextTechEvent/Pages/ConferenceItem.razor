@@ -1,0 +1,53 @@
+﻿<div class="card">
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(Item.ImageUrl) && Item.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png")
+        {
+            <img src="@Item.ImageUrl">
+        }
+        <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
+        <p class="card-text">
+            <i class="bi bi-calendar"></i>&nbsp; 
+            @if (Item.EventStart != Item.EventEnd)
+            {
+                <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date"> @Item.EventStart</time>
+                <text>-</text>
+                <time datetime="@(Item.EventEnd.ToString("yyyy-MM-dd"))" aria-label="Conference end date"> @Item.EventEnd</time>
+                <br />
+            }
+            else
+            {
+                <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference start date"> @Item.EventStart</time><br />
+            }
+            <i class="bi bi-geo-alt"></i> 
+            <span aria-label="Conference location">@GetLocation()</span><br />
+            <i class="bi bi-clock"></i>  
+            <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span>
+        </p>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public required Conference Item { get; set; }
+
+    string GetLocation()
+    {
+        List<string> location=new();
+        if (!string.IsNullOrEmpty(Item.City))
+        {
+            location.Add(Item.City);
+        }
+        if (!string.IsNullOrEmpty(Item.Country))
+        {
+            location.Add(Item.Country);
+        }
+        var result = string.Join(",", location);
+        if (string.IsNullOrEmpty(result))
+        {
+            if (Item.IsOnline)
+            {
+                result= "Online";
+            }
+        }
+        return result;
+    }
+}

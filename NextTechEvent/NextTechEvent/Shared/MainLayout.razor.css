@@ -5,20 +5,10 @@ main {
 }
 .page {
     display: grid;
-    grid-template-columns: 1fr minmax(600px,3fr) 1fr;
+    grid-template-columns: 1fr minmax(300px,3fr) 1fr;
     grid-template-rows: 1fr;
     gap: 0px 0px;
     grid-template-areas:
         "LeftArea MainArea RightArea";
     justify-content: center;
 }
-
-
-
-/*.LeftArea {
-    grid-area: LeftArea;
-}
-
-.RightArea {
-    grid-area: RightArea;
-}*/
