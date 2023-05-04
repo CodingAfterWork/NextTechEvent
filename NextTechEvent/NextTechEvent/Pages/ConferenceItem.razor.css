@@ -5,9 +5,10 @@
 
 img {
     display:block;
-    margin:auto;
+   /* margin:auto;*/
     max-width: 100%;
     max-height: 100px;
     width: auto;
     height: auto;
+    margin-bottom:10px;
 }

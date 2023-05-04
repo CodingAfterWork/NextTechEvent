@@ -2,15 +2,8 @@
 @using Blazm.Components
 @inject INextTechEventApi _api
 
-<table>
-    <Virtualize ItemsProvider="_api.GetConferencesAsync" Context="c">
-        <tr>
-             <td class="date p-2">
-                @c.EventStart
-            </td>
-            <td class="conferencename">
-                <a href="@($"Conferences/{c.Id}")">@c.Name</a>
-            </td>
-        </tr>
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    <Virtualize ItemsProvider="_api.GetConferencesAsync" Context="item">
+        <ConferenceItem Item="@item" ShowCFP="false"/>
     </Virtualize>
-</table>
+</div>

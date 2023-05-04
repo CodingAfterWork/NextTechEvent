@@ -1,0 +1,19 @@
+﻿.conferenceimage {
+    max-width: 60%;
+    max-height: 20%;
+}
+
+.temperature {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.date {
+    font-size: 0.8rem;
+}
+
+.icon{
+    font-size:3rem;
+}
+
+

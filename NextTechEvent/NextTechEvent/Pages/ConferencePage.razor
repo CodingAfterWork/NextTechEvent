@@ -4,51 +4,88 @@
 
 @inject INextTechEventApi _api
 
-@if (conference != null)
-{
+
+@if (conference != null) {
+    @if (!string.IsNullOrEmpty(conference.ImageUrl) && conference.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png") {
+        <img class="conferenceimage" src="@conference.ImageUrl">
+    }
     <div>
         <h1>@conference.Name</h1>
-        <ConferenceStatus ConferenceId="@conference.Id"/>
+        <ConferenceStatus ConferenceId="@conference.Id" />
         <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
         <h3>@conference.City</h3>
-        @if(weather!=null)
-        {
-            <ul>
-            @foreach (var temp in weather)
-            {
-                <li>
-                    @temp.Timestamp.ToString("MMM dd") 
-                    @temp.Value.Average.ToString("N1",culture)
-                </li>
-            }
-            </ul>
+        @if (weather != null) {
+            <div class="container">
+                <div class="row">
+                    @foreach (var temp in weather) {
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
+                                    <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
+                                    <p class="date">@temp.Timestamp.ToString("MMM dd") </p>
+                                </div>
+                            </div>
+                        </div>
+
+                     @*   <div class="container my-5">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a href="conference-page.html" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="width: 100%; height: 150px;">
+                                        <span class="bi bi-calendar-event me-3"></span>
+                                        <span>Go to Conference Page</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="call-for-paper-page.html" class="btn btn-success btn-lg d-flex align-items-center justify-content-center" style="width: 100%; height: 150px;">
+                                        <span class="bi bi-megaphone me-3"></span>
+                                        <span>Go to Call for Paper Page</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>*@
+
+                    }
+                </div>
+            </div>
         }
-        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
-        {
-            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.CfpEndDate.ToClosingIn()<br/>
+        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl)) {
+            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.CfpEndDate.ToClosingIn()
+
+            <br />
         }
-        @if (!string.IsNullOrEmpty(conference.EventUrl))
-        {
+        @if (!string.IsNullOrEmpty(conference.EventUrl)) {
             <a href="@conference.EventUrl">Go to the conference</a>
         }
         <br /><br />
         @string.Join(",",conference.Tags)
         <br /><br />
-        <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd"/>
+        <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd" />
     </div>
 }
 
-@code{
+@code {
     [Parameter]
     public string ConferenceId { get; set; }
     Conference? conference = null;
-    CultureInfo culture=CultureInfo.GetCultureInfo("en-US");
+    CultureInfo culture = CultureInfo.GetCultureInfo("en-US");
     TimeSeriesEntry<WeatherData>[] weather = null;
 
-    protected override async Task OnParametersSetAsync()
-    {
+    protected override async Task OnParametersSetAsync() {
         conference = await _api.GetConferenceAsync(ConferenceId);
         weather = await _api.GetWeatherTimeSeriesAsync(ConferenceId);
-        await  base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    string GetWeatherIcon(double temperature) {
+        if (temperature <= 10) {
+            return "bi-thermometer-snow";
+        }
+        else if (temperature > 10 && temperature <= 20) {
+            return "bi-thermometer-sun";
+        }
+        else {
+            return "bi-thermometer-high";
+        }
     }
 }
