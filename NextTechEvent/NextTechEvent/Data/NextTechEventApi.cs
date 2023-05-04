@@ -211,12 +211,19 @@ namespace NextTechEvent.Data
         public async Task<List<Conference>> GetConferencesAsync(DateOnly startdate, DateOnly enddate)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Conference>()
-                .Where(c => c.NumberOfDays < 10 &&
-                (c.EventStart>=startdate && c.EventStart<=enddate) 
-                || 
-                ( c.EventEnd>=startdate && c.EventEnd <= enddate)
+            var list = await session.Query<Conference>()
+                .Where(c => c.NumberOfDays<10
+                &&
+                (
+                    (c.EventStart>=startdate && c.EventStart<=enddate) 
+                    || 
+                    ( c.EventEnd>=startdate && c.EventEnd <= enddate)
+                    || 
+                    (startdate >= c.EventStart && startdate <= c.EventEnd)
+                )
                 ).ToListAsync();
+            //Some values in the database are wrong, so we need to check all the dates
+            return list.Where(c =>(c.EventEnd.DayNumber-c.EventStart.DayNumber)<10).ToList();
         }
 
             public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)

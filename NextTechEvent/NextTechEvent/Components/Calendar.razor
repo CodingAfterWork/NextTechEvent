@@ -28,7 +28,7 @@
                 {
                     var d = new DateOnly(Year, month, day);
                     var count = dates.Where(a => a.Date == d).Sum(a=>a.Count);
-                    <td class="@HeatMapColor(count)" @onclick="@(()=>ShowConferences(d))">
+                    <td class="@HeatMapColor(count)" @onclick="@(()=>ShowConferences(d))" style="cursor: pointer;">
                         <small>@d.DayOfWeek</small>    
                         @count
                     </td>

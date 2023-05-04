@@ -2,6 +2,12 @@
 
 <h2>Overlapping conferences</h2>
 <table>
+    <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Tags</th>
+    </tr>
     <Virtualize Items="Conferences" Context="c">
        <tr>
              <td class="date p-2">
@@ -9,6 +15,9 @@
             </td>
             <td class="conferencename">
                 <a href="@($"Conferences/{c.Id}")">@c.Name</a>
+            </td>
+            <td>
+                @c.Country
             </td>
             <td>
                 @string.Join(", ", c.Tags)
