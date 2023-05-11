@@ -5,16 +5,12 @@
 <h3>My events</h3>
 
 <ul class="list-group">
-    
+    <h1 class="text-center my-4">Conference List</h1>
     <Virtualize Items="conferences" Context="c">
-
-        <h1 class="text-center my-4">Conference List</h1>
-      
             <li class="list-group-item">
                 <div class="row">
-                    <div class="col-md-3"><strong>Date:</strong> March 25, 2023</div>
-                    <div class="col-md-4"><strong>Name:</strong> AI Tech Summit</div>
-                    <div class="col-md-5"><strong>Location:</strong> San Francisco, USA</div>
+                    <div class="col-md-3"><strong>Date:</strong> @c.EventStart</div>
+                    <div class="col-md-4"><strong>Name:</strong> @c.ConferenceName</div>
                 </div>
             </li>
          

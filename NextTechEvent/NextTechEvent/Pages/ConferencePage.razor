@@ -3,64 +3,82 @@
 @using Raven.Client.Documents.Session.TimeSeries
 
 @inject INextTechEventApi _api
+@if (conference != null)
+{
+    <div class="container mt-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-4">@conference.Name</h1>
+                <p class="lead"><i class="bi bi-calendar-check-fill"></i> @conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
+                <p class="lead"><i class="bi bi-geo-alt-fill"></i> @conference.City</p>
+                <ConferenceStatus ConferenceId="@conference.Id" />
+            </div>
+            <div class="col-md-4">
+                @if (!string.IsNullOrEmpty(conference.ImageUrl) && conference.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png") {
+                    <img class="img-fluid conferenceimage" src="@conference.ImageUrl">
+                }
+            </div>
+        </div>
 
-
-@if (conference != null) {
-    @if (!string.IsNullOrEmpty(conference.ImageUrl) && conference.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png") {
-        <img class="conferenceimage" src="@conference.ImageUrl">
-    }
-    <div>
-        <h1>@conference.Name</h1>
-        <ConferenceStatus ConferenceId="@conference.Id" />
-        <h2>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</h2>
-        <h3>@conference.City</h3>
-        @if (weather != null) {
-            <div class="container">
-                <div class="row">
-                    @foreach (var temp in weather) {
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
-                                    <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
-                                    <p class="date">@temp.Timestamp.ToString("MMM dd") </p>
-                                </div>
-                            </div>
-                        </div>
-
-                     @*   <div class="container my-5">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <a href="conference-page.html" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" style="width: 100%; height: 150px;">
-                                        <span class="bi bi-calendar-event me-3"></span>
-                                        <span>Go to Conference Page</span>
-                                    </a>
-                                </div>
-                                <div class="col-md-6">
-                                    <a href="call-for-paper-page.html" class="btn btn-success btn-lg d-flex align-items-center justify-content-center" style="width: 100%; height: 150px;">
-                                        <span class="bi bi-megaphone me-3"></span>
-                                        <span>Go to Call for Paper Page</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>*@
-
-                    }
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        @if (weather != null) {
+                            @foreach (var temp in weather) 
+                            {
+                                <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
+                                <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
+                                <p class="date">@temp.Timestamp.ToString("MMM dd") </p>                
+                            }
+                        }
+                    </div>
                 </div>
             </div>
-        }
-        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl)) {
-            <a href="@conference.CfpUrl">Go to call for paper</a> <text>closing in </text> @conference.CfpEndDate.ToClosingIn()
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Conference Links</h5>
+                        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
+                        {
+                            <p class="card-text"><i class="bi bi-megaphone-fill"></i> <a href="@conference.CfpUrl" target="_blank">Call for Papers</a> closing in @conference.CfpEndDate.ToClosingIn()</p>
+                        }
+                        @if (!string.IsNullOrEmpty(conference.EventUrl))
+                        {
+                            <p class="card-text"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl">Conference Link</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <br />
-        }
-        @if (!string.IsNullOrEmpty(conference.EventUrl)) {
-            <a href="@conference.EventUrl">Go to the conference</a>
-        }
-        <br /><br />
-        @string.Join(",",conference.Tags)
-        <br /><br />
-        <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd" />
+        <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       @* <div class="row mt-5">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">My participation</h5>
+                        <ul>
+                            <li><i class="bi bi-file-earmark-arrow-up-fill"></i> Submitted Call for paper</li>
+                            <li><i class="bi bi-star-fill"></i> Interested</li>
+                            <li><i class="bi bi-microphone-fill"></i> Spoke at</li>
+                            <li><i class="bi bi-check2-circle"></i> Accepted</li>
+                            <li><i class="bi bi-x-circle"></i> Rejected</li>
+                            <li><i class="bi bi-person-fill"></i> Attended</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>*@
     </div>
 }
 
