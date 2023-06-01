@@ -10,7 +10,7 @@
 
 <input type="text" placeholder="Search for conference name, city, country or tags" class="search" @bind="searchterm" @onkeypress="Search" @bind:event="oninput" />
 
-<table border="1">
+<table class="calendar" border="1">
     <tr>
         <th></th>
         @for (int month = 1; month <= 12; month++)

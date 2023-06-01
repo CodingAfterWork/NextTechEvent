@@ -1,10 +1,12 @@
 .navbar-brand {
-    color: var(--accent);
+    color: var(--dark);
     font-family: "Kaushan Script", "Helvetica Neue", Helvetica, Arial, cursive;
 }
 
-a, a:visited {
-    color: var(--accent);
+a,
+a:visited,
+::deep .nav-link {
+    color: var(--dark) !important;
 }
 
 .profilelink {

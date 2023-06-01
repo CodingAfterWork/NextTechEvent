@@ -19,6 +19,7 @@ public class ConferenceBySearchTerm :AbstractIndexCreationTask<Conference, Confe
             Id = c.Id,
             Name = c.Name,
             EventStart = c.EventStart,
+            EventEnd = c.EventEnd,
             CfpEndDate = c.CfpEndDate,
             NumberOfDays = c.NumberOfDays,
             SearchTerm = c.Name + "," + c.City + "," + c.Country + "," + c.Venue + "," + string.Join(",", c.Tags)
@@ -35,5 +36,6 @@ public class ConferenceSearchTerm
     public string SearchTerm { get; set; }
     public int NumberOfDays { get; set; }
     public DateOnly EventStart { get; set; }
+    public DateOnly EventEnd { get; set; }
     public DateTime? CfpEndDate { get; set; } = DateTime.Now;
 }

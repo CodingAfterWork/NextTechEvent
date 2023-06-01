@@ -1,13 +1,9 @@
-﻿.search {
-    padding: 2px 2px 2px 2px;
-    margin: 50px 50px 50px 50px;
-    width: calc(100% - 100px);
-}
+﻿
 
 
-table {
+.calendar {
     width: 100%;
-    
+    background-color:white;
 }
 a {
     font-size: 25px;
@@ -24,6 +20,8 @@ td {
     position: relative;
     text-align: center;
     width: 7%;
+    color:black;
+    
 }
 
 /*Left Header*/
@@ -41,6 +39,7 @@ th {
     font-weight: 900;
     border: 1px solid black;
     width: 7%;
+    color:black;
 }
 
 td > small {

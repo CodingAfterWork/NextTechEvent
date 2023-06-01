@@ -1,4 +1,3 @@
-
 <div class="col">
     <div class="p-3">
         <h4 class="display-5 fw-bold text-black mb-0">
@@ -9,8 +8,10 @@
 </div>
 @code {
     [Parameter]
-    public int Number { get; set; 
-}
+    public int Number
+    {
+        get; set;
+    }
     [Parameter]
-    public string Text { get; set; }  
+    public string Text { get; set; }
 }

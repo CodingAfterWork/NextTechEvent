@@ -230,11 +230,31 @@ namespace NextTechEvent.Data
             {
                 using IAsyncDocumentSession session = _store.OpenAsyncSession();
 
-            var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
-            .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And)
-            .Where(c=>c.NumberOfDays < 10);
+                var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
+                .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And)
+                .Where(c=>c.NumberOfDays < 10);
                 return await query.ToListAsync();
             }
+
+        public async Task<List<Conference>> SearchActiveConferencesAsync(bool hasOpenCallforPaper, string searchterm)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+
+            var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm").AsQueryable();
+            if (!string.IsNullOrEmpty(searchterm))
+            {
+                query = query.Search(c => c.SearchTerm, searchterm, @operator: SearchOperator.And);
+            }
+
+            if (hasOpenCallforPaper)
+            {
+                query = query.Where(c => c.CfpEndDate.HasValue && c.CfpEndDate.Value > DateTime.Now);
+            }
+
+            query = query.Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now) &&  c.NumberOfDays < 10);
+
+            return await query.ProjectInto<Conference>().ToListAsync();
+        }
 
         public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end, string searchterm)
         {
