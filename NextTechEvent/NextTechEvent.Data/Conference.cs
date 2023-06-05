@@ -69,6 +69,7 @@ public class Conference
     public List<string> Tags { get; set; } = new List<string>();
 
     public bool AddedAddressInformation { get; set; } = false;
+    public bool AddedRealTimeWeather { get; set; } = false;
 
     int _numberOfDays = 0;
     public int NumberOfDays 
