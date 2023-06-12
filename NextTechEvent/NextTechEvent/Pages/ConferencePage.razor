@@ -11,6 +11,14 @@
                 <h1 class="display-4">@conference.Name</h1>
                 <p class="lead"><i class="bi bi-calendar-check-fill"></i> @conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
                 <p class="lead"><i class="bi bi-geo-alt-fill"></i> @conference.City</p>
+                @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
+                {
+                    <p class="lead"><i class="bi bi-megaphone-fill"></i> <a href="@conference.CfpUrl" target="_blank">Call for Papers</a> closing in @conference.CfpEndDate.ToClosingIn()</p>
+                }
+                @if (!string.IsNullOrEmpty(conference.EventUrl))
+                {
+                    <p class="lead"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl">Conference Link</a></p>
+                }
                 <ConferenceStatus ConferenceId="@conference.Id" />
             </div>
             <div class="col-md-4">
@@ -21,34 +29,21 @@
         </div>
 
         <div class="row mt-5">
-            <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         @if (weather != null) {
+                        <div class="temperatures">
                             @foreach (var temp in weather) 
                             {
-                                <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
-                                <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
-                                <p class="date">@temp.Timestamp.ToString("MMM dd") </p>                
+                                <div class="temperature-item">
+                                    <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
+                                    <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
+                                    <p class="date">@temp.Timestamp.ToString("MMM dd") </p>                
+                                </div>
                             }
+                            </div>
                         }
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Conference Links</h5>
-                        @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
-                        {
-                            <p class="card-text"><i class="bi bi-megaphone-fill"></i> <a href="@conference.CfpUrl" target="_blank">Call for Papers</a> closing in @conference.CfpEndDate.ToClosingIn()</p>
-                        }
-                        @if (!string.IsNullOrEmpty(conference.EventUrl))
-                        {
-                            <p class="card-text"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl">Conference Link</a></p>
-                        }
-                    </div>
-                </div>
             </div>
         </div>
 

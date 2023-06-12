@@ -15,4 +15,14 @@
     font-size:3rem;
 }
 
+.temperatures {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 
+.temperature-item {
+    flex: 1;
+    margin: 10px;
+}

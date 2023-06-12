@@ -1,23 +1,63 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap);
 @import url(https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap);
-/*:root {
-    --accent: #fed136;
-    --bs-body-color: #212529;
-    --bs-body-bg: #808080;
-}*/
-
 
 :root {
-    --accent: #fed136;
-    --bs-body-color: #f8f9fa;
-    --bs-body-bg: #212529;
+    /*Color palette*/
+    --accent: #FAB505;
+    --light: #FAF3E1;
+    --dark: #1A1201;
+    --mediumlight: #FFFBF0;
+    --mediumlightdarker: #FAEDCD;
+    --mediumdark: #AD7C02;
+    --mediumdarker: #2B1F00;
+    --cardbg: var(--bs-body-bg);
+    /*Light Theme*/
+    --bs-body-color: var(--dark);
+    --bs-body-bg: var(--light);
+    --inputbgcolor: var(--mediumlight);
+    --inputbordercolor: var(--mediumlightdarker);
+}
+
+.bg-dark {
+    background-color: var(--accent) !important;
+}
+
+a {
+    color: var(--bs-body-color) !important;
+    text-decoration: none;
 }
 
 .card {
-    background-color: #343a40; /* This is a dark gray color */
-    color: #f8f9fa; /* This is a light gray color for the card text */
+    background-color: var(--cardbg);
+    color: var(--bs-body-color) !important;
+    border: none;
 }
 
+
+@media(prefers-color-scheme:dark) {
+    :root {
+        /*Dark Theme*/
+        --bs-body-color: var(--light);
+        --bs-body-bg: var(--dark);
+        --inputbgcolor: var(--mediumdarker);
+        --inputbordercolor: var(--mediumdark);
+    }
+
+
+    .card {
+        background-color: var(--cardbg);
+        color: var(--bs-body-color) !important;
+    }
+}
+
+.search {
+    padding: 2px 2px 2px 2px;
+    margin: 50px 50px 50px 50px;
+    width: calc(100% - 100px);
+    border: solid 1px var(--inputbordercolor);
+    background-color: var(--inputbgcolor);
+    color: var(--bs-body-color);
+}
 
 .list-group-item {
     background-color: #ffffff;
@@ -33,79 +73,34 @@
     flex-wrap: wrap;
 }
 
-table{
-    width:100%;
+table {
+    width: 100%;
 }
+
 .date {
-    width:100px;
-}
-
-/*:root {
-    --background: #FFFAFA;
-    --font-color: #1A1201;
-    --accent: #13650F;
-}*/
-/*Variables dark theme*/
-/*@media(prefers-color-scheme:dark) {
-    :root {
-        --background: #1A1201;
-        --font-color: #FFFAFA;
-        --accent: #FAB505
-    }
+    width: 100px;
 }
 
 
-.form-label{
-    margin-top:15px;
-    margin-bottom:5px;
+
+
+/*table {
 }
 
-html, body {
-    font-family: tahoma,verdana,sans-serif;
-    background-color: var(--background);
-    color: var(--font-color);
-}
-
-h1:focus {
-    outline: none;
-}
-
-a {
-    color: var(--accent);
-    text-decoration:none;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.content {
-    padding-top: 1.1rem;
-}*/
-
-
-table{}
 tr:nth-child(2n) {
-    background-color:#efefef;
-}
+    background-color: #efefef;
+}*/
+
 td {
     padding: 0.3em 0.3em 0.3em 0.3em
 }
 
-a {
-    text-decoration:none; 
-    color:#00206c;
-}
-a:hover {
-    color: #002fcf;
-}
 
 
 
-.conferencename{
-    width:400px;    
+
+.conferencename {
+    width: 400px;
 }
 
 .valid.modified:not([type=checkbox]) {
