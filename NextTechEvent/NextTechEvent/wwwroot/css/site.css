@@ -10,7 +10,9 @@
     --mediumlightdarker: #FAEDCD;
     --mediumdark: #AD7C02;
     --mediumdarker: #2B1F00;
-    --cardbg: var(--bs-body-bg);
+    --cardbackground-light: #DADBCA;
+    --cardbackground-dark: #37382E;
+    --cardbg: var(--cardbackground-light);
     /*Light Theme*/
     --bs-body-color: var(--dark);
     --bs-body-bg: var(--light);
@@ -39,8 +41,9 @@ a {
         /*Dark Theme*/
         --bs-body-color: var(--light);
         --bs-body-bg: var(--dark);
-        --inputbgcolor: var(--mediumdarker);
-        --inputbordercolor: var(--mediumdark);
+        --inputbgcolor: #261b02; /*var(--mediumdarker);*/
+        --inputbordercolor: var(--mediumdarker);
+        --cardbg: var(--cardbackground-dark);
     }
 
 
@@ -51,8 +54,9 @@ a {
 }
 
 .search {
-    padding: 2px 2px 2px 2px;
+    padding: 7px 7px 7px 7px;
     margin: 50px 50px 50px 50px;
+    border-radius:5px;
     width: calc(100% - 100px);
     border: solid 1px var(--inputbordercolor);
     background-color: var(--inputbgcolor);

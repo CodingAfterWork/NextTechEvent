@@ -1,0 +1,47 @@
+﻿@page "/geo/{Latitude:double}/{Longitude:double}/{Radius:double}"
+@inject INextTechEventApi _api
+
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    @if(Conferences.Any())
+    {
+        @foreach (var item in Conferences)
+        {
+            <ConferenceItem Item="@item"/>
+        }
+    }
+    else 
+    {
+        <text>No results</text>
+    }
+
+</div>
+
+@code{
+    List<Conference> Conferences = new();
+    string searchterm = "";
+    [Parameter]
+    public double Latitude { get; set; } = 59.3293;
+    [Parameter]
+    public double Longitude { get; set; } = 18.0686;
+    [Parameter]
+    public double Radius { get; set; } = 400;
+    protected override async Task OnInitializedAsync() 
+    {
+        await LoadDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    async Task Search(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+
+        Conferences = (await _api.GetConferencesAsync(Latitude, Longitude, Radius, DateOnly.MinValue,DateOnly.MaxValue)).OrderBy(c => c.CfpEndDate).ToList();
+    }
+}

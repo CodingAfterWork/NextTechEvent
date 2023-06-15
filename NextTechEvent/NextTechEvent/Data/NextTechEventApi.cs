@@ -226,7 +226,28 @@ namespace NextTechEvent.Data
             return list.Where(c =>(c.EventEnd.DayNumber-c.EventStart.DayNumber)<10).ToList();
         }
 
-            public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)
+        public async Task<List<Conference>> GetConferencesAsync(double latitude, double longitude, double radius,DateOnly startdate, DateOnly enddate)
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
+            var list = await session.Query<Conference>()
+            .Spatial(
+                factory => factory.Point(x => x.Latitude, x => x.Longitude),
+                criteria => criteria.WithinRadius(radius, latitude, longitude))
+                .Where(c => c.NumberOfDays < 10
+                &&
+                (
+                    (c.EventStart >= startdate && c.EventStart <= enddate)
+                    ||
+                    (c.EventEnd >= startdate && c.EventEnd <= enddate)
+                    ||
+                    (startdate >= c.EventStart && startdate <= c.EventEnd)
+                )
+                ).ToListAsync();
+            //Some values in the database are wrong, so we need to check all the dates
+            return list.Where(c => (c.EventEnd.DayNumber - c.EventStart.DayNumber) < 10).ToList();
+        }
+
+        public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)
             {
                 using IAsyncDocumentSession session = _store.OpenAsyncSession();
 
