@@ -17,7 +17,7 @@
                 }
                 @if (!string.IsNullOrEmpty(conference.EventUrl))
                 {
-                    <p class="lead"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl">Conference Link</a></p>
+                    <p class="lead"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl" target="_blank">Conference Link</a></p>
                 }
                 <ConferenceStatus ConferenceId="@conference.Id" />
             </div>
@@ -37,8 +37,10 @@
                             {
                                 <div class="temperature-item">
                                     <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
-                                    <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
-                                    <p class="date">@temp.Timestamp.ToString("MMM dd") </p>                
+                                    <div class="temp-date">
+                                        <h2 class="temperature">@temp.Value.Average.ToString("N1",culture)°C</h2>
+                                        <p class="date">@temp.Timestamp.ToString("MMM dd") </p>                
+                                    </div>
                                 </div>
                             }
                             </div>

@@ -5,6 +5,7 @@
 .temperature {
     font-size: 2rem;
     font-weight: bold;
+    margin-bottom:0px
 }
 
 .date {
@@ -13,8 +14,12 @@
 
 .icon{
     font-size:3rem;
+    padding-bottom:15px;
 }
 
+.bi {
+    margin-right:10px;
+}
 .temperatures {
     display: flex;
     flex-direction: row;
@@ -23,6 +28,20 @@
 }
 
 .temperature-item {
-    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin: 10px;
+    
+} 
+
+.temp-date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+h1 {
+    margin-bottom:20px; 
 }
