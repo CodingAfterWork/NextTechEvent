@@ -4,6 +4,7 @@
     <TargetFramework>net7</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d95e7c4d-a605-4c5c-b703-640cd981d7da</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,6 +37,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="RavenDB.Client" Version="5.4.5" />
+    <PackageReference Include="Telerik.UI.for.Blazor" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
