@@ -23,7 +23,7 @@ jobs:
           include-prerelease: true
           
       - name: Restore NuGet Packages
-        run: dotnet restore NextTechEvent/NextTechEvent/NextTechEvent.csproj --configfile ./nuget.config ...
+        run: dotnet restore NextTechEvent/NextTechEvent/NextTechEvent.csproj --configfile ./nuget.config 
         env:
           MY_API_KEY: ${{ secrets.TELERIK_NUGET_KEY }}
 
