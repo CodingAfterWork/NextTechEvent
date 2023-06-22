@@ -31,6 +31,10 @@ public class Conference
     public string Venue { get; set; } = "";
     [Display(Name = "What country is the event in?")]
     public string Country { get; set; } = "";
+
+    public string Continent { get; set; } = "";
+    public string Region { get; set; } = "";
+
     [Display(Name = "What city is the event in?")]
     public string City { get; set; } = "";
     [Display(Name = "What is the event about?")]

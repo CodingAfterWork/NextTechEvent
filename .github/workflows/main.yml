@@ -21,6 +21,11 @@ jobs:
         with:
           dotnet-version: '7.0.x'
           include-prerelease: true
+          
+      - name: Restore NuGet Packages
+        run: dotnet restore NextTechEvent/NextTechEvent/NextTechEvent.csproj --configfile ./nuget.config 
+        env:
+          MY_API_KEY: ${{ secrets.TELERIK_NUGET_KEY }}
 
       - name: Build with dotnet
         run: dotnet build --configuration Release NextTechEvent/NextTechEvent/NextTechEvent.csproj
