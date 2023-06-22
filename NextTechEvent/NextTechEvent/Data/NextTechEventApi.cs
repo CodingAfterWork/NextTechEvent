@@ -257,7 +257,7 @@ namespace NextTechEvent.Data
                 return await query.ToListAsync();
             }
 
-        public async Task<List<Conference>> SearchActiveConferencesAsync(bool hasOpenCallforPaper, string searchterm)
+        public async Task<List<Conference>> SearchActiveConferencesAsync(bool hasOpenCallforPaper, string searchterm, int pagesize, int page)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
 
@@ -272,9 +272,19 @@ namespace NextTechEvent.Data
                 query = query.Where(c => c.CfpEndDate.HasValue && c.CfpEndDate.Value > DateTime.Now);
             }
 
-            query = query.Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now) &&  c.NumberOfDays < 10);
+            query = query.Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now) && c.NumberOfDays < 10);
 
-            return await query.ProjectInto<Conference>().ToListAsync();
+         
+            if (hasOpenCallforPaper)
+            {
+                query = query.OrderBy(c => c.CfpEndDate);
+            }
+            else
+            {
+                query = query.OrderBy(c => c.EventStart);
+            }
+
+            return await query.Skip(page * pagesize).Take(pagesize).ProjectInto<Conference>().ToListAsync();
         }
 
         public async Task<List<ConferenceCountByDate>> GetConferenceCountByDate(DateOnly start, DateOnly end, string searchterm)

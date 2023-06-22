@@ -1,31 +1,42 @@
 ﻿<div class="card">
     <div class="card-body">
-        @if (!string.IsNullOrEmpty(Item.ImageUrl) && Item.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png")
+        @if (!string.IsNullOrEmpty(Item.Name))
         {
-            <img src="@Item.ImageUrl">
+            @if (!string.IsNullOrEmpty(Item.ImageUrl) && Item.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png")
+            {
+                <img src="@Item.ImageUrl">
+            }
+            <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
+            <p class="card-text">
+                <i class="bi bi-calendar"></i>&nbsp;
+                @if (Item.EventStart != Item.EventEnd)
+                {
+                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date"> @Item.EventStart</time>
+                    <text>-</text>
+                    <time datetime="@(Item.EventEnd.ToString("yyyy-MM-dd"))" aria-label="Conference end date"> @Item.EventEnd</time>
+                    <br />
+                }
+                else
+                {
+                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference start date"> @Item.EventStart</time>
+
+                    <br />
+                }
+                <i class="bi bi-geo-alt"></i>
+                <span aria-label="Conference location">@GetLocation()</span><br />
+                @if (ShowCFP)
+                {
+                    <i class="bi bi-clock"></i>
+                    <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span>
+                }
+            </p>
         }
-        <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
-        <p class="card-text">
-            <i class="bi bi-calendar"></i>&nbsp; 
-            @if (Item.EventStart != Item.EventEnd)
-            {
-                <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date"> @Item.EventStart</time>
-                <text>-</text>
-                <time datetime="@(Item.EventEnd.ToString("yyyy-MM-dd"))" aria-label="Conference end date"> @Item.EventEnd</time>
-                <br />
-            }
-            else
-            {
-                <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference start date"> @Item.EventStart</time><br />
-            }
-            <i class="bi bi-geo-alt"></i> 
-            <span aria-label="Conference location">@GetLocation()</span><br />
-            @if (ShowCFP)
-            {
-                <i class="bi bi-clock"></i>  
-                <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span>
-            }
-        </p>
+        else
+        {
+            <div class="load-wrapper" style="height:246px;">
+                <div class="activity"></div>
+            </div>
+        }
     </div>
 </div>
 @code {
@@ -35,7 +46,7 @@
     public bool ShowCFP { get; set; } = true;
     string GetLocation()
     {
-        List<string> location=new();
+        List<string> location = new();
         if (!string.IsNullOrEmpty(Item.City))
         {
             location.Add(Item.City);
@@ -49,7 +60,7 @@
         {
             if (Item.IsOnline)
             {
-                result= "Online";
+                result = "Online";
             }
         }
         return result;

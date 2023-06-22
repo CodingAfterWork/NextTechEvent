@@ -4,6 +4,35 @@
 <div class="d-flex flex-wrap justify-content-center gap-4">
     @if(Conferences.Any())
     {
+         <TelerikMap Center="Center" 
+                Height="500px"
+                Width="750px"
+                Zoom="4"
+                OnMarkerClick="OnMarkerClick">
+        <MapLayers>
+            <MapLayer Type="@MapLayersType.Marker"
+                      Data="@MarkerData"
+                      LocationField="@nameof(MarkerModel.LatLng)"
+                      TitleField="@nameof(MarkerModel.Title)">
+                    <MapLayerMarkerSettings>
+                        <MapLayerMarkerSettingsTooltip >
+                            <Template>
+                                @{
+                                var wh = context.DataItem as MarkerModel;
+                                }
+                                <div>@wh.Title</div>
+                            </Template>
+                        </MapLayerMarkerSettingsTooltip>
+                    </MapLayerMarkerSettings>
+            </MapLayer>
+
+            <MapLayer Type="@MapLayersType.Tile"
+                      Attribution="@Attribution"
+                      Subdomains="@Subdomains"
+                      UrlTemplate="@UrlTemplate">
+            </MapLayer>
+        </MapLayers>
+    </TelerikMap>
         @foreach (var item in Conferences)
         {
             <ConferenceItem Item="@item"/>
