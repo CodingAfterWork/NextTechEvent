@@ -1,5 +1,9 @@
 ﻿@page "/geo/{Latitude:double}/{Longitude:double}/{Radius:double}"
 @inject INextTechEventApi _api
+@inject NavigationManager manager
+@inject IJSRuntime JSRuntime
+@using Telerik.Blazor.Components
+@using Telerik.Blazor;
 
 <div class="d-flex flex-wrap justify-content-center gap-4">
     @if(Conferences.Any())
@@ -15,7 +19,7 @@
                       LocationField="@nameof(MarkerModel.LatLng)"
                       TitleField="@nameof(MarkerModel.Title)">
                     <MapLayerMarkerSettings>
-                        <MapLayerMarkerSettingsTooltip >
+                        <MapLayerMarkerSettingsTooltip 
                             <Template>
                                 @{
                                 var wh = context.DataItem as MarkerModel;
@@ -54,6 +58,22 @@
     public double Longitude { get; set; } = 18.0686;
     [Parameter]
     public double Radius { get; set; } = 400;
+
+    public string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
+    public string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    public string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    public double[] Center => new double[] { Latitude, Longitude };
+
+    public List<MarkerModel> MarkerData { get; set; } = new();
+
+    public void OnMarkerClick(MapMarkerClickEventArgs args)
+    {
+        var item = args.DataItem as MarkerModel;
+        if (item != null)
+        {
+            manager.NavigateToNewWindowAsync(JSRuntime, $"{manager.BaseUri}/conferences/{item.Id}", $"Opening {item.Title}");
+        }
+    }
     protected override async Task OnInitializedAsync() 
     {
         await LoadDataAsync();
@@ -70,7 +90,14 @@
 
     private async Task LoadDataAsync()
     {
+        Conferences = (await _api.GetConferencesAsync(Latitude, Longitude, Radius, DateOnly.MinValue, DateOnly.MaxValue)).OrderBy(c => c.EventStart).ToList();
+        MarkerData = Conferences.Select(c => new MarkerModel { Id = c.Id, LatLng = new double[] { c.Latitude, c.Longitude }, Title = c.Name }).ToList();
+    }
 
-        Conferences = (await _api.GetConferencesAsync(Latitude, Longitude, Radius, DateOnly.MinValue,DateOnly.MaxValue)).OrderBy(c => c.CfpEndDate).ToList();
+    public class MarkerModel
+    {
+        public required double[] LatLng { get; set; }
+        public required string Title { get; set; }
+        public required string Id { get; set; }
     }
 }

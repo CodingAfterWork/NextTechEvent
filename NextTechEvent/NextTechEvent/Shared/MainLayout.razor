@@ -1,4 +1,5 @@
 ﻿@using NextTechEvent.Pages
+@using Telerik.Blazor.Components
 @inherits LayoutComponentBase
 @inject NavigationManager navigationManager
 
@@ -10,7 +11,9 @@
 }
 <div class="page">
     <main>
+        <TelerikRootComponent>
         @Body
+        </TelerikRootComponent>
     </main>
     
 </div>
