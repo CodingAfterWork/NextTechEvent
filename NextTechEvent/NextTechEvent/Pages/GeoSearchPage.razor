@@ -1,4 +1,5 @@
 ﻿@page "/geo/{Latitude:double}/{Longitude:double}/{Radius:double}"
+@page "/geo/{*ConferenceId}"
 @inject INextTechEventApi _api
 @inject NavigationManager manager
 @inject IJSRuntime JSRuntime
@@ -8,7 +9,9 @@
 <div class="d-flex flex-wrap justify-content-center gap-4">
     @if(Conferences.Any())
     {
-         <TelerikMap Center="Center" 
+        <AzmDatePicker @bind-StartDate="StartDate" @bind-EndDate="EndDate" OnChange="LoadDataAsync" />
+        <AzmSlider Min="10" Max="2000" @bind-Value="@Radius" OnChange="@LoadDataAsync" />
+        <TelerikMap Center="Center" 
                 Height="500px"
                 Width="750px"
                 Zoom="4"
@@ -57,7 +60,14 @@
     [Parameter]
     public double Longitude { get; set; } = 18.0686;
     [Parameter]
-    public double Radius { get; set; } = 400;
+    public int Radius { get; set; } = 400;
+
+    [Parameter]
+    public DateTime StartDate { get; set; }
+    [Parameter]
+    public DateTime EndDate { get; set; }
+    [Parameter]
+    public string? ConferenceId { get; set; }
 
     public string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
     public string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
@@ -74,10 +84,24 @@
             manager.NavigateToNewWindowAsync(JSRuntime, $"{manager.BaseUri}/conferences/{item.Id}", $"Opening {item.Title}");
         }
     }
-    protected override async Task OnInitializedAsync() 
+  
+
+    protected override async Task OnParametersSetAsync()
     {
+       if (ConferenceId != null)
+        {
+            var conference = await _api.GetConferenceAsync(ConferenceId);
+            if (conference != null)
+            {
+                Latitude = conference.Latitude;
+                Longitude = conference.Longitude;
+                StartDate = conference.EventStart.ToDateTime(new TimeOnly(0, 0, 0));
+                EndDate = conference.EventEnd.ToDateTime(new TimeOnly(23, 59, 59));
+            }
+        }
         await LoadDataAsync();
-        await base.OnInitializedAsync();
+        
+        await base.OnParametersSetAsync();
     }
 
     async Task Search(KeyboardEventArgs args)
@@ -90,7 +114,7 @@
 
     private async Task LoadDataAsync()
     {
-        Conferences = (await _api.GetConferencesAsync(Latitude, Longitude, Radius, DateOnly.MinValue, DateOnly.MaxValue)).OrderBy(c => c.EventStart).ToList();
+        Conferences = (await _api.GetConferencesAsync(Latitude, Longitude, Radius, DateOnly.FromDateTime(StartDate), DateOnly.FromDateTime(EndDate))).OrderBy(c => c.EventStart).ToList();
         MarkerData = Conferences.Select(c => new MarkerModel { Id = c.Id, LatLng = new double[] { c.Latitude, c.Longitude }, Title = c.Name }).ToList();
     }
 

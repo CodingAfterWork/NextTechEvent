@@ -2,10 +2,6 @@
     <div class="card-body">
         @if (!string.IsNullOrEmpty(Item.Name))
         {
-            @if (!string.IsNullOrEmpty(Item.ImageUrl) && Item.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png")
-            {
-                <img src="@Item.ImageUrl">
-            }
             <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
             <p class="card-text">
                 <i class="bi bi-calendar"></i>&nbsp;

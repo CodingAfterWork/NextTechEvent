@@ -10,7 +10,7 @@
             <div class="col-md-8">
                 <h1 class="display-4">@conference.Name</h1>
                 <p class="lead"><i class="bi bi-calendar-check-fill"></i> @conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
-                <p class="lead"><i class="bi bi-geo-alt-fill"></i> @conference.City</p>
+                <p class="lead"><i class="bi bi-geo-alt-fill"></i><a href="@($"/geo/{conference.Id}")">@conference.City</a></p>
                 @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
                 {
                     <p class="lead"><i class="bi bi-megaphone-fill"></i> <a href="@conference.CfpUrl" target="_blank">Call for Papers</a> closing in @conference.CfpEndDate.ToClosingIn()</p>
