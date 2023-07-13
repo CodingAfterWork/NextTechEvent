@@ -1,6 +1,10 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap);
 @import url(https://fonts.googleapis.com/css?family=Kaushan+Script&display=swap);
 
+/** {
+    border: red dashed 1px;
+}*/
+
 :root {
     /*Color palette*/
     --accent: #FAB505;
@@ -55,9 +59,10 @@ a {
 
 .search {
     padding: 7px 7px 7px 7px;
-    margin: 50px 50px 50px 50px;
+    margin-top: 50px;
+    margin-bottom:50px;
     border-radius:5px;
-    width: calc(100% - 100px);
+    width: 100%;
     border: solid 1px var(--inputbordercolor);
     background-color: var(--inputbgcolor);
     color: var(--bs-body-color);

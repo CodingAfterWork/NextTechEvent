@@ -9,15 +9,22 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="display-4">@conference.Name</h1>
-                <p class="lead"><i class="bi bi-calendar-check-fill"></i> @conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
-                <p class="lead"><i class="bi bi-geo-alt-fill"></i><a href="@($"/geo/{conference.Id}")">@conference.City</a></p>
-                @if (conference.CfpEndDate > DateTime.Now && !string.IsNullOrEmpty(conference.CfpUrl))
+                <p class="lead"><i class="bi bi-calendar-check-fill"></i>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
+                <p class="lead"><i class="bi bi-geo-alt-fill"></i><a href="@($"/geo/{conference.Id}")">@conference.GetLocation()</a></p>
+                @if (!string.IsNullOrEmpty(conference.CfpUrl))
                 {
-                    <p class="lead"><i class="bi bi-megaphone-fill"></i> <a href="@conference.CfpUrl" target="_blank">Call for Papers</a> closing in @conference.CfpEndDate.ToClosingIn()</p>
+                    <p class="lead"><i class="bi bi-megaphone-fill"></i><a href="@conference.CfpUrl" target="_blank">Call for Papers</a>
+                        @if (conference.CfpEndDate > DateTime.Now)
+                        {
+                            <text>closing in</text>
+                        }
+                        
+                        &nbsp;@conference.CfpEndDate.ToClosingIn()
+                    </p>
                 }
                 @if (!string.IsNullOrEmpty(conference.EventUrl))
                 {
-                    <p class="lead"><i class="bi bi-link-45deg"></i> <a href="@conference.EventUrl" target="_blank">Conference Link</a></p>
+                    <p class="lead"><i class="bi bi-link-45deg"></i><a href="@conference.EventUrl" target="_blank">Conference Link</a></p>
                 }
                 <ConferenceStatus ConferenceId="@conference.Id" />
             </div>
@@ -27,13 +34,14 @@
                 }
             </div>
         </div>
-
-        <div class="row mt-5">
+        @if (weather != null && weather.Any())
+        {
+            <div class="row mt-3">
                 <div class="card">
                     <div class="card-body">
-                        @if (weather != null) {
+
                         <div class="temperatures">
-                            @foreach (var temp in weather) 
+                            @foreach (var temp in weather)
                             {
                                 <div class="temperature-item">
                                     <i class="icon @GetWeatherIcon(temp.Value.Average)"></i>
@@ -43,39 +51,15 @@
                                     </div>
                                 </div>
                             }
-                            </div>
-                        }
+                        </div>
+                        
                     </div>
             </div>
         </div>
-
+        }
         <div class="row mt-5">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd" />
-                    </div>
-                </div>
-            </div>
+            <OverlappingConferences Start="conference.EventStart" End="conference.EventEnd" />
         </div>
-
-       @* <div class="row mt-5">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">My participation</h5>
-                        <ul>
-                            <li><i class="bi bi-file-earmark-arrow-up-fill"></i> Submitted Call for paper</li>
-                            <li><i class="bi bi-star-fill"></i> Interested</li>
-                            <li><i class="bi bi-microphone-fill"></i> Spoke at</li>
-                            <li><i class="bi bi-check2-circle"></i> Accepted</li>
-                            <li><i class="bi bi-x-circle"></i> Rejected</li>
-                            <li><i class="bi bi-person-fill"></i> Attended</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>*@
     </div>
 }
 
@@ -84,7 +68,7 @@
     public string ConferenceId { get; set; }
     Conference? conference = null;
     CultureInfo culture = CultureInfo.GetCultureInfo("en-US");
-    TimeSeriesEntry<WeatherData>[] weather = null;
+    TimeSeriesEntry<WeatherData>[] weather = new TimeSeriesEntry<WeatherData>[0];
 
     protected override async Task OnParametersSetAsync() {
         conference = await _api.GetConferenceAsync(ConferenceId);

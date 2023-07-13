@@ -95,4 +95,30 @@ public class Conference
             _numberOfDays = value;
         }
     }
+
+    public string GetLocation()
+    {
+        List<string> location = new();
+        if (!string.IsNullOrEmpty(City))
+        {
+            location.Add(City);
+        }
+        if (!string.IsNullOrEmpty(Country))
+        {
+            location.Add(Country);
+        }
+        var result = string.Join(",", location);
+        if (string.IsNullOrEmpty(result))
+        {
+            if (IsOnline)
+            {
+                result = "Online";
+            }
+            else
+            {
+                result = "N/A";
+            }
+        }
+        return result;
+    }
 }

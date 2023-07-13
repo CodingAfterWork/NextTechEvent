@@ -2,11 +2,12 @@
 @using NextTechEvent.Pages
 <h2>Overlapping conferences</h2>
 
-@foreach (var item in Conferences)
-{
-    <ConferenceItem ShowCFP="false" Item="@item" />
-}
-     
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    @foreach (var item in Conferences)
+    {
+        <ConferenceItem ShowCFP="false" Item="@item" />
+    }
+</div>
 @code
 {
     List<Conference> Conferences = new();

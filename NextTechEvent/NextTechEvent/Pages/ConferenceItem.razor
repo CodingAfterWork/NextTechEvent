@@ -2,29 +2,29 @@
     <div class="card-body">
         @if (!string.IsNullOrEmpty(Item.Name))
         {
-            <h5 class="card-title"><i class="bi bi-building"></i><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
+            <h5 class="card-title"><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
             <p class="card-text">
-                <i class="bi bi-calendar"></i>&nbsp;
+                <i class="bi bi-calendar"></i>
                 @if (Item.EventStart != Item.EventEnd)
                 {
-                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date"> @Item.EventStart</time>
+                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference date">@Item.EventStart</time>
                     <text>-</text>
-                    <time datetime="@(Item.EventEnd.ToString("yyyy-MM-dd"))" aria-label="Conference end date"> @Item.EventEnd</time>
+                    <time datetime="@(Item.EventEnd.ToString("yyyy-MM-dd"))" aria-label="Conference end date">@Item.EventEnd</time>
                     <br />
                 }
                 else
                 {
-                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference start date"> @Item.EventStart</time>
+                    <time datetime="@(Item.EventStart.ToString("yyyy-MM-dd"))" aria-label="Conference start date">@Item.EventStart</time>
 
                     <br />
                 }
-                <i class="bi bi-geo-alt"></i>
-                <span aria-label="Conference location">@GetLocation()</span><br />
                 @if (ShowCFP)
                 {
                     <i class="bi bi-clock"></i>
-                    <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span>
+                    <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span><br/>
                 }
+                <i class="bi bi-geo-alt"></i>
+                <span aria-label="Conference location">@Item.GetLocation()</span><br />
             </p>
         }
         else
@@ -40,25 +40,5 @@
     public required Conference Item { get; set; }
     [Parameter]
     public bool ShowCFP { get; set; } = true;
-    string GetLocation()
-    {
-        List<string> location = new();
-        if (!string.IsNullOrEmpty(Item.City))
-        {
-            location.Add(Item.City);
-        }
-        if (!string.IsNullOrEmpty(Item.Country))
-        {
-            location.Add(Item.Country);
-        }
-        var result = string.Join(",", location);
-        if (string.IsNullOrEmpty(result))
-        {
-            if (Item.IsOnline)
-            {
-                result = "Online";
-            }
-        }
-        return result;
-    }
+  
 }
