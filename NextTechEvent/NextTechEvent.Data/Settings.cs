@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NextTechEvent.Data
 {
-    public class Calendar
+    public class Settings
     {
         public required string UserId { get; set; }
         public string? SessionizeCalendarUrl { get; set; }

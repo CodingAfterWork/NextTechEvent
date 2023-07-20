@@ -47,8 +47,7 @@ namespace NextTechEvent.Data
             return status;
         }
 
-
-        public async Task<Calendar> SaveCalendarAsync(Calendar item)
+        public async Task<Settings> SaveSettingsAsync(Settings item)
         {
             if (item.Id == null)
             {
@@ -80,23 +79,23 @@ namespace NextTechEvent.Data
             return _statuses ?? new();
         }
 
-        public async Task<Calendar?> GetCalendarAsync(string id)
+        public async Task<Settings?> GetCalendarAsync(string id)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Calendar>().Where(c => c.Id == id).FirstOrDefaultAsync();
+            return await session.Query<Settings>().Where(c => c.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Calendar?> GetCalendarByUserIdAsync(string userId)
+        public async Task<Settings?> GetCalendarByUserIdAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            var calendar = await session.Query<Calendar>().Where(c => c.UserId == userId).FirstOrDefaultAsync();
-
-            return calendar;
+            var settings = await session.Query<Settings>().Where(c => c.UserId == userId).FirstOrDefaultAsync();
+            
+            return settings;
         }
 
-        public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Calendar calendar)
+        public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
         {
-            var calendarcontent = await _factory.CreateClient().GetStringAsync(calendar.SessionizeCalendarUrl);
+            var calendarcontent = await _factory.CreateClient().GetStringAsync(settings.SessionizeCalendarUrl);
             var sessionizecalendar = Ical.Net.Calendar.Load(calendarcontent);
             foreach (CalendarEvent item in sessionizecalendar.Events.Where(i => i.Uid.StartsWith("SZEVENT")))
             {
@@ -104,7 +103,7 @@ namespace NextTechEvent.Data
                 var conf = await GetConferenceBySessionizeIdAsync(eventId);
                 if (conf == null || conf.Id == null)
                     continue;
-                var status = await GetStatusAsync(conf.Id, calendar.UserId);
+                var status = await GetStatusAsync(conf.Id, settings.UserId);
                 var state = GetStateFromCalendarEvent(item);
                 if (status == null || (status != null && status.State != state))
                 {
@@ -115,7 +114,7 @@ namespace NextTechEvent.Data
                         status = new()
                         {
                             ConferenceId = conf.Id,
-                            UserId = calendar.UserId,
+                            UserId = settings.UserId,
                             State = state
                         };
 
@@ -142,7 +141,7 @@ namespace NextTechEvent.Data
             }
         }
 
-        public async Task<List<ConferenceUserStatus>> GetConferencesByUserIdAsync(string userId)
+        public async Task<List<Conference>> GetConferencesByUserIdAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             var data = await session.Query<Status>()
@@ -151,7 +150,7 @@ namespace NextTechEvent.Data
                 .ToListAsync();
 
 
-            List<ConferenceUserStatus> result = new();
+            List<Conference> result = new();
             foreach (var c in data)
             {
                 result.Add(await GetConferenceUserStatus(session, c.ConferenceId, c.State));
@@ -159,10 +158,10 @@ namespace NextTechEvent.Data
             return result;
         }
 
-        private async Task<ConferenceUserStatus> GetConferenceUserStatus(IAsyncDocumentSession session, string conferenceId, StateEnum state)
+        private async Task<Conference> GetConferenceUserStatus(IAsyncDocumentSession session, string conferenceId, StateEnum state)
         {
             var conference = await session.LoadAsync<Conference>(conferenceId);
-            return new() { ConferenceId = conferenceId, ConferenceName = conference.Name, EventStart = conference.EventStart, State = state };
+            return conference;
         }
 
         public async Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)

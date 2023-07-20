@@ -3,22 +3,15 @@
 @inject INextTechEventApi _api
 
 <h3>My events</h3>
-
-<ul class="list-group">
-    <h1 class="text-center my-4">Conference List</h1>
-    <Virtualize Items="conferences" Context="c">
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-md-3"><strong>Date:</strong> @c.EventStart</div>
-                    <div class="col-md-4"><strong>Name:</strong> @c.ConferenceName</div>
-                    <div class="col-md-4"> @c.State</div>
-                </div>
-            </li>
-    </Virtualize>
-    </ul>
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    @foreach (var conference in conferences)
+    {
+        <ConferenceItem Item="conference" ShowCFP="false" />
+    }
+</div>
 
 @code {
-    List<ConferenceUserStatus> conferences = new List<ConferenceUserStatus>();
+    List<Conference> conferences = new();
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
     protected override async Task OnInitializedAsync()

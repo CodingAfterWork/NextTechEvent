@@ -1,15 +1,15 @@
-﻿@page "/Profile/Calendar"
+﻿@page "/Profile/Settings"
 @inject NavigationManager navigation
 @inject INextTechEventApi _api
-@if (Calendar!=null)
+@if (Settings != null)
 {
-    <EditForm Model="Calendar" OnSubmit="Save">
-        @if (Calendar.Id != null)
+    <EditForm Model="Settings" OnSubmit="Save">
+        @if (Settings.Id != null)
         {
             <BlazmInputText LabelText="Calendar Url" @bind-Value="Url" Disabled="true" />
         }
         <br/>
-        <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Calendar.SessionizeCalendarUrl" />
+        <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Settings.SessionizeCalendarUrl" />
 
         <button type="submit" class="btn btn-primary">Save</button>
     </EditForm>
@@ -20,7 +20,7 @@ else
 }
 
 @code {
-    public NextTechEvent.Data.Calendar? Calendar { get; set; }
+    public NextTechEvent.Data.Settings? Settings { get; set; }
     [CascadingParameter]
     private Task<AuthenticationState>? authenticationStateTask { get; set; }
     public string Url { get; set; } = "";
@@ -30,7 +30,7 @@ else
         var authState = await authenticationStateTask;
         var user = authState.User;
         var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-        Calendar = await _api.GetCalendarByUserIdAsync(id);
+        Settings = await _api.GetCalendarByUserIdAsync(id);
         UpdateUrl();
     }
 
@@ -42,7 +42,7 @@ else
         var userId = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
         if (userId != null)
         {
-            Calendar = new()
+            Settings = new()
             {
                 UserId = userId
             };
@@ -52,13 +52,13 @@ else
     public async Task Save()
     {
         
-        if (Calendar != null)
+        if (Settings != null)
         {
-            Calendar = await _api.SaveCalendarAsync(Calendar);
-            if(!string.IsNullOrEmpty(Calendar.SessionizeCalendarUrl))
+            Settings = await _api.SaveSettingsAsync(Settings);
+            if (!string.IsNullOrEmpty(Settings.SessionizeCalendarUrl))
             {
                 //Download the calendar from Sessionize and sync
-                await _api.UpdateStatusBasedOnSessionizeCalendarAsync(Calendar);
+                await _api.UpdateStatusBasedOnSessionizeCalendarAsync(Settings);
             }
         }
         UpdateUrl();
@@ -66,9 +66,9 @@ else
 
     private void UpdateUrl()
     {
-        if (Calendar != null)
+        if (Settings != null)
         {
-            Url = $"{navigation.BaseUri}Calendar/{Calendar.Id}";
+            Url = $"{navigation.BaseUri}Calendar/{Settings.Id}";
         }
     }
     

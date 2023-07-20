@@ -28,3 +28,8 @@
     padding-top: 300px;
     padding-bottom: 200px;
 }
+
+span {
+    color: var(--light);
+    text-shadow: 0.2rem 0.2rem var(--dark);
+}

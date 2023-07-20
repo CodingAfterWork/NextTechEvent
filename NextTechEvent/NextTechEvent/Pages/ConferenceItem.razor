@@ -1,4 +1,6 @@
-﻿<div class="card">
+﻿@using NextTechEvent.Extensions;
+@inject INextTechEventApi _api
+<div class="card">
     <div class="card-body">
         @if (!string.IsNullOrEmpty(Item.Name))
         {
@@ -21,7 +23,9 @@
                 @if (ShowCFP)
                 {
                     <i class="bi bi-clock"></i>
-                    <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span><br/>
+                    <span aria-label="Conference  CFP closes in">@Item.CfpEndDate.ToClosingIn()</span>
+
+                    <br />
                 }
                 <i class="bi bi-geo-alt"></i>
                 <span aria-label="Conference location">@Item.GetLocation()</span><br />
@@ -33,12 +37,89 @@
                 <div class="activity"></div>
             </div>
         }
+
+        @if (Status != null)
+        {
+            <div class="state" @onclick="ToggleStatusAsync">
+                @if (Status.State == StateEnum.NotSet)
+                {
+                    <i class="bi bi-star" title="Not set"></i>
+                }
+                else if (Status.State == StateEnum.Interested)
+                {
+                    <i class="bi bi-star-fill" title="Interested"></i>
+                }
+                else if (Status.State == StateEnum.Submitted)
+                {
+                    <i class="bi bi-box-arrow-up" title="Submitted"></i>
+                }
+                else if (Status.State == StateEnum.Accepted)
+                {
+                    <i class="bi bi-check" title="Accepted"></i>
+                }
+                else if (Status.State == StateEnum.Rejected)
+                {
+                    <i class="bi bi-x-circle" title="Rejected"></i>
+                }
+                else if (Status.State == StateEnum.Attended)
+                {
+                    <i class="bi bi-person-fill" title="Attended"></i>
+                }
+                else if (Status.State == StateEnum.SpokeAt)
+                {
+                    <i class="bi bi-mic" title="Spoke at"></i>
+                }
+            </div>
+        }
+
+
     </div>
+
+
 </div>
+
 @code {
     [Parameter]
     public required Conference Item { get; set; }
     [Parameter]
     public bool ShowCFP { get; set; } = true;
-  
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+
+    public Status? Status { get; set; }
+    protected async override Task OnParametersSetAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        if (authState.User != null)
+        {
+            var user = authState.User;
+
+            if (user?.Identity?.Name != null && user.Identity.IsAuthenticated)
+            {
+                var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                var savedstatus = await _api.GetStatusAsync(Item.Id, id);
+                if (savedstatus != null)
+                {
+                    Status = savedstatus;
+                }
+                else
+                {
+                    Status = new() { ConferenceId = Item.Id, State = StateEnum.NotSet, UserId = id };
+                }
+            }
+        }
+        await base.OnParametersSetAsync();
+    }
+
+
+    public async Task ToggleStatusAsync()
+    {
+        if (Status != null)
+        {
+            Status.State = Status.State.Next();
+            await _api.SaveStatusAsync(Status);
+        }
+
+    }
 }

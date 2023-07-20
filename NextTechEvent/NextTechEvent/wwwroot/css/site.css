@@ -20,7 +20,7 @@
     /*Light Theme*/
     --bs-body-color: var(--dark);
     --bs-body-bg: var(--light);
-    --inputbgcolor: var(--mediumlight);
+    --inputbgcolor: var(--cardbg);
     --inputbordercolor: var(--mediumlightdarker);
 }
 
@@ -45,7 +45,7 @@ a {
         /*Dark Theme*/
         --bs-body-color: var(--light);
         --bs-body-bg: var(--dark);
-        --inputbgcolor: #261b02; /*var(--mediumdarker);*/
+        --inputbgcolor: var( --cardbg);
         --inputbordercolor: var(--mediumdarker);
         --cardbg: var(--cardbackground-dark);
     }
@@ -60,12 +60,17 @@ a {
 .search {
     padding: 7px 7px 7px 7px;
     margin-top: 50px;
-    margin-bottom:50px;
-    border-radius:5px;
+    margin-bottom: 50px;
+    border-radius: 5px;
     width: 100%;
-    border: solid 1px var(--inputbordercolor);
+    border: solid 1px var(--bs-body-color);
     background-color: var(--inputbgcolor);
     color: var(--bs-body-color);
+}
+
+::placeholder {
+    color: var(--bs-body-color);
+    opacity: 0.5;
 }
 
 .list-group-item {
