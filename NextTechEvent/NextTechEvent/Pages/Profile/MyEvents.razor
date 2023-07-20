@@ -38,7 +38,7 @@
         ArgumentNullException.ThrowIfNull(authenticationStateTask);
         var authState = await authenticationStateTask;
         var user = authState.User;
-        var id = user?.Claims.FirstOrDefault(c => c.Type == "sid")?.Value;
+        var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
         conferences = await _api.GetConferencesByUserIdAsync(id);
         await base.OnInitializedAsync();
     }
