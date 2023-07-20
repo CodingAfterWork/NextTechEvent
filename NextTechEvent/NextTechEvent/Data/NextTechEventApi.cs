@@ -18,7 +18,7 @@ namespace NextTechEvent.Data
     {
         IDocumentStore _store;
         IHttpClientFactory _factory;
-        public NextTechEventApi(IDocumentStore store,IHttpClientFactory factory)
+        public NextTechEventApi(IDocumentStore store, IHttpClientFactory factory)
         {
             _store = store;
             _factory = factory;
@@ -31,7 +31,7 @@ namespace NextTechEvent.Data
             await session.SaveChangesAsync();
             return conference;
         }
-        
+
         public async Task<Status> SaveStatusAsync(Status status)
         {
             var savedstatus = await GetStatusAsync(status.ConferenceId, status.UserId);
@@ -43,13 +43,14 @@ namespace NextTechEvent.Data
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             await session.StoreAsync(status);
             await session.SaveChangesAsync();
+            _statuses = null;
             return status;
         }
 
-        
+
         public async Task<Calendar> SaveCalendarAsync(Calendar item)
         {
-            if(item.Id==null)
+            if (item.Id == null)
             {
                 item.Id = Guid.NewGuid().ToString().Replace("-", "");
             }
@@ -62,12 +63,22 @@ namespace NextTechEvent.Data
 
 
 
-        public async Task<Status> GetStatusAsync(string conferenceId,string userId)
+        public async Task<Status?> GetStatusAsync(string conferenceId, string userId)
         {
-            using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Status>().Where(c => c.ConferenceId == conferenceId && c.UserId==userId).FirstOrDefaultAsync();
+            var statuses = await GetStatusesAsync(userId);
+            return statuses.Where(c => c.ConferenceId == conferenceId && c.UserId == userId).FirstOrDefault();
         }
 
+        List<Status>? _statuses;
+        public async Task<List<Status>> GetStatusesAsync(string userId)
+        {
+            if (_statuses == null)
+            {
+                using IAsyncDocumentSession session = _store.OpenAsyncSession();
+                _statuses = await session.Query<Status>().Where(c => c.UserId == userId).ToListAsync();
+            }
+            return _statuses ?? new();
+        }
 
         public async Task<Calendar?> GetCalendarAsync(string id)
         {
@@ -78,29 +89,29 @@ namespace NextTechEvent.Data
         public async Task<Calendar?> GetCalendarByUserIdAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            var calendar = await session.Query<Calendar>().Where(c => c.UserId == userId ).FirstOrDefaultAsync();
+            var calendar = await session.Query<Calendar>().Where(c => c.UserId == userId).FirstOrDefaultAsync();
 
             return calendar;
         }
 
         public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Calendar calendar)
         {
-            var calendarcontent=await _factory.CreateClient().GetStringAsync(calendar.SessionizeCalendarUrl);
-            var sessionizecalendar =Ical.Net.Calendar.Load(calendarcontent);
-            foreach (CalendarEvent item in sessionizecalendar.Events.Where(i=>i.Uid.StartsWith("SZEVENT")))
+            var calendarcontent = await _factory.CreateClient().GetStringAsync(calendar.SessionizeCalendarUrl);
+            var sessionizecalendar = Ical.Net.Calendar.Load(calendarcontent);
+            foreach (CalendarEvent item in sessionizecalendar.Events.Where(i => i.Uid.StartsWith("SZEVENT")))
             {
-                var eventId = item.Uid.Replace("SZEVENT","");
+                var eventId = item.Uid.Replace("SZEVENT", "");
                 var conf = await GetConferenceBySessionizeIdAsync(eventId);
                 if (conf == null || conf.Id == null)
                     continue;
-                var status =await GetStatusAsync(conf.Id, calendar.UserId);
+                var status = await GetStatusAsync(conf.Id, calendar.UserId);
                 var state = GetStateFromCalendarEvent(item);
-                if (status == null || (status!=null && status.State != state))
+                if (status == null || (status != null && status.State != state))
                 {
                     if (status == null)
                     {
-                        
-                        
+
+
                         status = new()
                         {
                             ConferenceId = conf.Id,
@@ -141,14 +152,14 @@ namespace NextTechEvent.Data
 
 
             List<ConferenceUserStatus> result = new();
-            foreach(var c in data)
+            foreach (var c in data)
             {
                 result.Add(await GetConferenceUserStatus(session, c.ConferenceId, c.State));
             }
             return result;
         }
 
-        private async Task <ConferenceUserStatus> GetConferenceUserStatus(IAsyncDocumentSession session, string conferenceId, StateEnum state)
+        private async Task<ConferenceUserStatus> GetConferenceUserStatus(IAsyncDocumentSession session, string conferenceId, StateEnum state)
         {
             var conference = await session.LoadAsync<Conference>(conferenceId);
             return new() { ConferenceId = conferenceId, ConferenceName = conference.Name, EventStart = conference.EventStart, State = state };
@@ -157,13 +168,13 @@ namespace NextTechEvent.Data
         public async Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            var data=await session.Query<Status>()
+            var data = await session.Query<Status>()
                 .Include(c => c.ConferenceId)
                 .Where(c => c.UserId == userId && c.State != StateEnum.NotSet && c.State != StateEnum.Rejected)
                 .ToListAsync();
-            
+
             var calendar = new Ical.Net.Calendar();
-            calendar.Method= Ical.Net.CalendarMethods.Publish;
+            calendar.Method = Ical.Net.CalendarMethods.Publish;
             calendar.AddProperty("X-WR-CALNAME", "NextTechEvent");
             calendar.AddProperty("CALNAME", "NextTechEvent");
             calendar.AddProperty("NAME", "NextTechEvent");
@@ -177,7 +188,7 @@ namespace NextTechEvent.Data
                     Location = $"{conference.Venue}, {conference.City}, {conference.Country}",
                     Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
                     End = new CalDateTime(conference.EventEnd.AddDays(1).ToDateTime(new TimeOnly(23, 59))),
-                    IsAllDay=true,
+                    IsAllDay = true,
                     Summary = $"{conference.Name} - {s.State}",
                     Status = s.State == StateEnum.Accepted ? "CONFIRMED" : "TENTATIVE",
                     Description = $"https://nexttechevent.azurewebsites.net/Conferences/{s.ConferenceId}"
@@ -199,34 +210,34 @@ namespace NextTechEvent.Data
         public async Task<Conference> GetConferenceBySessionizeIdAsync(string sessionizeId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Conference>().Where(c => c.Identifier == sessionizeId && c.Source=="Sessionize").FirstOrDefaultAsync();
+            return await session.Query<Conference>().Where(c => c.Identifier == sessionizeId && c.Source == "Sessionize").FirstOrDefaultAsync();
         }
 
         public async Task<List<Conference>> GetConferencesAsync()
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            return await session.Query<Conference>().Where(c =>c.NumberOfDays<10 && c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
+            return await session.Query<Conference>().Where(c => c.NumberOfDays < 10 && c.EventEnd > DateOnly.FromDateTime(DateTime.Now)).ToListAsync();
         }
 
         public async Task<List<Conference>> GetConferencesAsync(DateOnly startdate, DateOnly enddate)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             var list = await session.Query<Conference>()
-                .Where(c => c.NumberOfDays<10
+                .Where(c => c.NumberOfDays < 10
                 &&
                 (
-                    (c.EventStart>=startdate && c.EventStart<=enddate) 
-                    || 
-                    ( c.EventEnd>=startdate && c.EventEnd <= enddate)
-                    || 
+                    (c.EventStart >= startdate && c.EventStart <= enddate)
+                    ||
+                    (c.EventEnd >= startdate && c.EventEnd <= enddate)
+                    ||
                     (startdate >= c.EventStart && startdate <= c.EventEnd)
                 )
                 ).ToListAsync();
             //Some values in the database are wrong, so we need to check all the dates
-            return list.Where(c =>(c.EventEnd.DayNumber-c.EventStart.DayNumber)<10).ToList();
+            return list.Where(c => (c.EventEnd.DayNumber - c.EventStart.DayNumber) < 10).ToList();
         }
 
-        public async Task<List<Conference>> GetConferencesAsync(double latitude, double longitude, double radius,DateOnly startdate, DateOnly enddate)
+        public async Task<List<Conference>> GetConferencesAsync(double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             var list = await session.Query<Conference>()
@@ -248,14 +259,14 @@ namespace NextTechEvent.Data
         }
 
         public async Task<List<ConferenceSearchTerm>> SearchConferencesAsync(string searchterm)
-            {
-                using IAsyncDocumentSession session = _store.OpenAsyncSession();
+        {
+            using IAsyncDocumentSession session = _store.OpenAsyncSession();
 
-                var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
-                .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And)
-                .Where(c=>c.NumberOfDays < 10);
-                return await query.ToListAsync();
-            }
+            var query = session.Query<ConferenceSearchTerm>("ConferenceBySearchTerm")
+            .Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And)
+            .Where(c => c.NumberOfDays < 10);
+            return await query.ToListAsync();
+        }
 
         public async Task<List<Conference>> SearchActiveConferencesAsync(bool hasOpenCallforPaper, string searchterm, int pagesize, int page)
         {
@@ -274,7 +285,7 @@ namespace NextTechEvent.Data
 
             query = query.Where(c => c.EventEnd > DateOnly.FromDateTime(DateTime.Now) && c.NumberOfDays < 10);
 
-         
+
             if (hasOpenCallforPaper)
             {
                 query = query.OrderBy(c => c.CfpEndDate);
