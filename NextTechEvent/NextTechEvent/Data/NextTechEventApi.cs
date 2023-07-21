@@ -79,13 +79,13 @@ namespace NextTechEvent.Data
             return _statuses ?? new();
         }
 
-        public async Task<Settings?> GetCalendarAsync(string id)
+        public async Task<Settings?> GetSettingsAsync(string id)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             return await session.Query<Settings>().Where(c => c.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Settings?> GetCalendarByUserIdAsync(string userId)
+        public async Task<Settings?> GetSettingsByUserIdAsync(string userId)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             var settings = await session.Query<Settings>().Where(c => c.UserId == userId).FirstOrDefaultAsync();

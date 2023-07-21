@@ -90,8 +90,8 @@ app.MapGet("logout", async (HttpContext context) =>
 
 app.MapGet("calendar/{id}", async (string id, INextTechEventApi api) =>
 {
-    var ntecalendar = await api.GetCalendarAsync(id);
-    var calendar = await api.GetUserCalendarAsync(ntecalendar.UserId);
+    var settings = await api.GetSettingsAsync(id);
+    var calendar = await api.GetUserCalendarAsync(settings!.UserId);
 
     CalendarSerializer serializer = new ();
     MemoryStream ms = new MemoryStream();

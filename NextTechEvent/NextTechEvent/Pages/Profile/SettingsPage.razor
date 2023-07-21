@@ -3,20 +3,25 @@
 @inject INextTechEventApi _api
 @if (Settings != null)
 {
+    <h1>Settings</h1>
     <EditForm Model="Settings" OnSubmit="Save">
-        @if (Settings.Id != null)
-        {
-            <BlazmInputText LabelText="Calendar Url" @bind-Value="Url" Disabled="true" />
-        }
+        <h2>Calendar</h2>
+        <span>This is a calendar file (ICAL) that you can add to you Calendar client. This way you will automatically block time for upcoming conferences.</span>
+        <br /><br />
+        @Url
+        <br />
         <br/>
+        <h2>Sessionize integration</h2>
+        <span>
+            Sessionize is a tool to manage your conference or submit CFP to other conferences. 
+            They offer a celendar containing the conferences you have submitted for. 
+            You can use that calendar to sync your upcoming events with NextTechEvent.
+            Go to <a href="https://sessionize.com/app/speaker" target="_blank">Sessionize</a> and get your calendar url.
+        </span>
         <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Settings.SessionizeCalendarUrl" />
-
+        <br /><br />
         <button type="submit" class="btn btn-primary">Save</button>
     </EditForm>
-}
-else
-{
-    <button @onclick="EnableCalendarAsync">Activate calendar</button>
 }
 
 @code {
@@ -30,24 +35,16 @@ else
         var authState = await authenticationStateTask;
         var user = authState.User;
         var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-        Settings = await _api.GetCalendarByUserIdAsync(id);
+        ArgumentNullException.ThrowIfNull(id);
+        Settings = await _api.GetSettingsByUserIdAsync(id);
+        if (Settings == null) //Save the settings
+        {
+            Settings = await _api.SaveSettingsAsync(new Settings() { UserId=id});
+        }
         UpdateUrl();
     }
 
-    private async Task EnableCalendarAsync()
-    {
-        ArgumentNullException.ThrowIfNull(authenticationStateTask);
-        var authState = await authenticationStateTask;
-        var user = authState.User;
-        var userId = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-        if (userId != null)
-        {
-            Settings = new()
-            {
-                UserId = userId
-            };
-        }
-    }
+
 
     public async Task Save()
     {

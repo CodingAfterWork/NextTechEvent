@@ -26,9 +26,9 @@
             <AuthorizeView>
                 <Authorized>
 
-                    <a class="profilelink" href="/Profile/MyEvents">My events</a>
-                    
-                    <a href="logout" class="nav-link">Log out</a>
+                    <NavLink class="nav-link" href="/Profile/MyEvents">My events</NavLink>
+                    <NavLink class="nav-link" href="/Profile/Settings"><i class="bi bi-gear-fill"></i></NavLink>
+                    <NavLink class="nav-link" href="logout">Log out</NavLink>
                 </Authorized>
                 <NotAuthorized>
                     <a href="login?redirectUri=/" class="nav-link">Log in</a>
