@@ -38,12 +38,12 @@
             </div>
         }
 
-        @if (Status != null)
+        @if(Status!=null)
         {
             <div class="state" @onclick="ToggleStatusAsync">
                 @if (Status.State == StateEnum.NotSet)
                 {
-                    <i class="bi bi-star" title="Not set"></i>
+                    <i class="bi bi-star" title="Interested"></i>
                 }
                 else if (Status.State == StateEnum.Interested)
                 {
@@ -117,7 +117,7 @@
     {
         if (Status != null)
         {
-            Status.State = Status.State.Next();
+            Status.State=Status.State.Next();
             await _api.SaveStatusAsync(Status);
         }
 

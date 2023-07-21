@@ -24,11 +24,3 @@ img {
     right: 20px;
     top: 10px;
 }
-.state {
-    cursor: pointer;
-    min-width: 10px;
-    min-height: 10px;
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}

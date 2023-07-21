@@ -102,3 +102,7 @@ app.MapGet("calendar/{id}", async (string id, INextTechEventApi api) =>
 });
 
 app.Run();
+
+
+public partial class Program
+{ }
