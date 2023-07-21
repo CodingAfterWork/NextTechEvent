@@ -13,11 +13,14 @@
         <br/>
         <h2>Sessionize integration</h2>
         <span>
-            Sessionize is a tool to manage your conference or submit CFP to other conferences. 
-            They offer a celendar containing the conferences you have submitted for. 
-            You can use that calendar to sync your upcoming events with NextTechEvent.
-            Go to <a href="https://sessionize.com/app/speaker" target="_blank">Sessionize</a> and get your calendar url.
-        </span>
+            Did you know, NextTechEvent can automatically update your status based on your Sessionize calendar?<br />
+            <ol>
+                <li>Head over to <a href="https://sessionize.com/app/speaker" target="_blank"><u>Sessionize</u></a>.</li>
+                <li>Locate and grab your calendar URL.</li>
+                <li>Return here and paste the URL into the textbox below.</li>
+            </ol>
+            Voilà! Your Sessionize details (what conferences you have submitted to, been accepted to, and so on) will now be synced with NextTechEvent. Easy, right?
+        </span><br /><br />
         <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Settings.SessionizeCalendarUrl" />
         <br /><br />
         <button type="submit" class="btn btn-primary">Save</button>
