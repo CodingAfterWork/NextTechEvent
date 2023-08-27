@@ -116,7 +116,14 @@ public class Conference
             }
             else
             {
-                result = "N/A";
+                if (!string.IsNullOrEmpty(Venue))
+                {
+                    result = Venue;
+                }
+                else
+                {
+                    result = "N/A";
+                }
             }
         }
         return result;
