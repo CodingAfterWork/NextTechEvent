@@ -60,8 +60,6 @@ namespace NextTechEvent.Data
             return item;
         }
 
-
-
         public async Task<Status?> GetStatusAsync(string conferenceId, string userId)
         {
             var statuses = await GetStatusesAsync(userId);
@@ -153,7 +151,11 @@ namespace NextTechEvent.Data
             List<Conference> result = new();
             foreach (var c in data)
             {
-                result.Add(await GetConferenceUserStatus(session, c.ConferenceId, c.State));
+                var conference = await GetConferenceUserStatus(session, c.ConferenceId, c.State);
+                if (conference != null)
+                {
+                    result.Add(conference);
+                }
             }
             return result;
         }

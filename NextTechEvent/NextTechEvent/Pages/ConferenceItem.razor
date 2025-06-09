@@ -2,7 +2,7 @@
 @inject INextTechEventApi _api
 <div class="card">
     <div class="card-body">
-        @if (!string.IsNullOrEmpty(Item.Name))
+        @if (!string.IsNullOrEmpty(Item?.Name))
         {
             <h5 class="card-title"><a href="@($"/conferences/{Item.Id}")"> @Item.Name</a></h5>
             <p class="card-text">
@@ -38,7 +38,7 @@
             </div>
         }
 
-        @if(Status!=null)
+        @if (Status != null)
         {
             <div class="state" @onclick="ToggleStatusAsync">
                 @if (Status.State == StateEnum.NotSet)
@@ -79,7 +79,7 @@
 </div>
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public required Conference Item { get; set; }
     [Parameter]
     public bool ShowCFP { get; set; } = true;
@@ -98,16 +98,20 @@
             if (user?.Identity?.Name != null && user.Identity.IsAuthenticated)
             {
                 var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                var savedstatus = await _api.GetStatusAsync(Item.Id, id);
-                if (savedstatus != null)
+                if (Item != null)
                 {
-                    Status = savedstatus;
-                }
-                else
-                {
-                    Status = new() { ConferenceId = Item.Id, State = StateEnum.NotSet, UserId = id };
+                    var savedstatus = await _api.GetStatusAsync(Item.Id, id);
+                    if (savedstatus != null)
+                    {
+                        Status = savedstatus;
+                    }
+                    else
+                    {
+                        Status = new() { ConferenceId = Item.Id, State = StateEnum.NotSet, UserId = id };
+                    }
                 }
             }
+
         }
         await base.OnParametersSetAsync();
     }
@@ -117,7 +121,7 @@
     {
         if (Status != null)
         {
-            Status.State=Status.State.Next();
+            Status.State = Status.State.Next();
             await _api.SaveStatusAsync(Status);
         }
 
