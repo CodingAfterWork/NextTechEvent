@@ -31,7 +31,8 @@
     <BlazmInputText @bind-Value="conference.Venue" />
     <BlazmInputText @bind-Value="conference.Country" />
     <BlazmInputText @bind-Value="conference.City" />
-    
+  
+    <ValidationSummary/>
 
     <button type="submit" class="btn btn-success" disabled="@saving">Save</button>
 </EditForm>

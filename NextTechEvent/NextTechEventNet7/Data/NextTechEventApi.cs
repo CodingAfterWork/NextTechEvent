@@ -60,8 +60,6 @@ namespace NextTechEvent.Data
             return item;
         }
 
-
-
         public async Task<Status?> GetStatusAsync(string conferenceId, string userId)
         {
             var statuses = await GetStatusesAsync(userId);
@@ -89,7 +87,7 @@ namespace NextTechEvent.Data
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
             var settings = await session.Query<Settings>().Where(c => c.UserId == userId).FirstOrDefaultAsync();
-            
+
             return settings;
         }
 
@@ -153,7 +151,11 @@ namespace NextTechEvent.Data
             List<Conference> result = new();
             foreach (var c in data)
             {
-                result.Add(await GetConferenceUserStatus(session, c.ConferenceId, c.State));
+                var conference = await GetConferenceUserStatus(session, c.ConferenceId, c.State);
+                if (conference != null)
+                {
+                    result.Add(conference);
+                }
             }
             return result;
         }
@@ -303,7 +305,18 @@ namespace NextTechEvent.Data
             var query = session.Query<ConferenceCountByDate>("ConferenceCountByDates");
             if (!string.IsNullOrEmpty(searchterm))
             {
-                query = query.Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And);
+                if (searchterm.Contains(","))
+                {
+                    var terms = searchterm.Split(',');
+                    foreach (var term in terms)
+                    {
+                        query = query.Search(x => x.SearchTerm, term, @operator: SearchOperator.And);
+                    }
+                }
+                else
+                {
+                    query = query.Search(x => x.SearchTerm, searchterm, @operator: SearchOperator.And);
+                }
             }
             return await query.Where(c => c.Date >= start && c.Date <= end).ToListAsync();
         }

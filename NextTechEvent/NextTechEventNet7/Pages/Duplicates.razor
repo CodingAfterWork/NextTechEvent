@@ -1,0 +1,31 @@
+﻿@page "/duplicates"
+@using Raven.Client.Documents;
+@inject IDocumentStore _store
+<h3>Duplicates</h3>
+
+@code {
+    protected async override Task OnInitializedAsync()
+    {
+        //Get all confs
+        using var session = _store.OpenAsyncSession();
+
+        Console.WriteLine("Search");
+        var confs = await session.Query<Conference>().Where(c=>c.Source=="Sessionize" && c.EventStart > new DateOnly(2025,1,1)).OrderByDescending(c=>c.EventStart).Take(10000).ToListAsync();
+
+        var confsgrouped = confs.Where(c => c.Source == "Sessionize").GroupBy(c => c.Identifier);
+        foreach(var cg in confsgrouped)
+        {
+            if(cg.Count()>1)
+            {
+                var duplicates = cg.OrderBy(c => c.Id);
+                foreach (var item in duplicates.Skip(1))
+                {
+                    session.Delete(item);
+                    Console.WriteLine($"Deleting {item.Name}");
+                }
+            }
+        }
+        await session.SaveChangesAsync();
+        Console.WriteLine("Done");
+    }
+}

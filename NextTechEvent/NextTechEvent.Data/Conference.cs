@@ -10,7 +10,7 @@ public class Conference
     [Display(Name = "Conference name")]
     public string Name { get; set; } = "";
     [Url]
-    public string ImageUrl { get; set; } = "";
+    public string? ImageUrl { get; set; }
     [Url]
     [Display(Name = "Call for paper URL")]
     public string? CfpUrl { get; set; }
