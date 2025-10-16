@@ -1,5 +1,7 @@
 ﻿using NextTechEvent.Components;
 using NextTechEvent.Pages;
+using NextTechEventNet7.Components;
+using NextTechEventNet7.Pages;
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;

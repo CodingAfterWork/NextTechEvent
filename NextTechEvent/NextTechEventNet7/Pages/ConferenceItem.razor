@@ -33,7 +33,7 @@
         }
         else
         {
-            <div class="load-wrapper" style="height:246px;">
+            <div class="load-wrapper" style="height:136px;">
                 <div class="activity"></div>
             </div>
         }
@@ -98,14 +98,20 @@
             if (user?.Identity?.Name != null && user.Identity.IsAuthenticated)
             {
                 var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-                var savedstatus = await _api.GetStatusAsync(Item.Id, id);
-                if (savedstatus != null)
+                if (user != null)
                 {
-                    Status = savedstatus;
-                }
-                else
-                {
-                    Status = new() { ConferenceId = Item.Id, State = StateEnum.NotSet, UserId = id };
+                    if (Item.Id != null && id != null)
+                    {
+                        var savedstatus = await _api.GetStatusAsync(Item.Id, id);
+                        if (savedstatus != null)
+                        {
+                            Status = savedstatus;
+                        }
+                        else
+                        {
+                            Status = new() { ConferenceId = Item.Id, State = StateEnum.NotSet, UserId = id };
+                        }
+                    }
                 }
             }
         }

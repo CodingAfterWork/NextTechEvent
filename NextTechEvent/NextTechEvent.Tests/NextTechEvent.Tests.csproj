@@ -36,7 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\NextTechEvent\NextTechEvent.csproj" />
+	  <ProjectReference Include="..\NextTechEventNet7\NextTechEventNet7.csproj" />
 	</ItemGroup>
 
 
