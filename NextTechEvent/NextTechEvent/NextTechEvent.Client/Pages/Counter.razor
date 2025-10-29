@@ -1,0 +1,17 @@
+<div class="col">
+    <div class="p-3">
+        <h4 class="display-5 fw-bold text-black mb-0">
+            <AnimatedCounter Start="@(Number/2L)" End="@Number" Interval="@(Number*5L)" />
+        </h4>
+        <p class="mb-0">@Text</p>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public long Number
+    {
+        get; set;
+    }
+    [Parameter]
+    public string Text { get; set; }
+}

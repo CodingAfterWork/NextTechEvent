@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@using NextTechEvent.Client.Pages
+@using Telerik.Blazor.Components
+@inject NavigationManager navigationManager
+
+<PageTitle>NextTechEvent</PageTitle>
+<NavMenu />
+@if (navigationManager.Uri.Replace("#","") == navigationManager.BaseUri)
+{
+    <Header />
+}
+<div class="page">
+    <main>
+        <TelerikRootComponent>
+        @Body
+        </TelerikRootComponent>
+    </main>
+    
+</div>
+
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

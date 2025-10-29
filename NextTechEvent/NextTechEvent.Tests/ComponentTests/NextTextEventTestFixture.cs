@@ -1,4 +1,5 @@
-﻿using NextTechEvent.Components;
+﻿using NextTechEvent.Client.Data;
+using NextTechEvent.Components;
 using NextTechEvent.Data;
 using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
@@ -24,7 +25,7 @@ public class NextTextEventTestFixture : RavenTestDriver, IAsyncLifetime
         services.AddTransient((services) =>
         {
             TestContext testContext = new();
-            testContext.Services.AddScoped<INextTechEventApi, NextTechEventApi>();
+            testContext.Services.AddScoped<INextTechEventApi, NextTechEventServerApi>();
             testContext.Services.AddSingleton(ctx =>
             {
                 var store = GetDocumentStore(); //Gets a test store

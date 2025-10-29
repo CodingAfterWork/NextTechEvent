@@ -1,0 +1,28 @@
+﻿@page "/ByWeather"
+@using Blazm.Components
+
+@inject INextTechEventApi _api
+Average temp above <input type="number" @bind="averageTemp" /> <button @onclick="Search">Find a conference</button>
+<BlazmGrid Data="conferences">
+    <GridColumns>
+        <GridColumn Field="@nameof(ConferenceWeather.Timestamp)" Title="Date"/>
+        <GridColumn Field="@nameof(ConferenceWeather.Name)" >
+            <Template>
+                @{
+                    var c = (ConferenceWeather)context;
+                }
+                <a href="@($"Conferences/{c.ConferenceId}")">@c.Name</a>
+            </Template>
+        </GridColumn>
+        <GridColumn Field="@nameof(ConferenceWeather.Average)" Title="Average Temp" Format="{0:N1}"/>
+    </GridColumns>
+</BlazmGrid>
+
+@code{
+    List<ConferenceWeather> conferences=new List<ConferenceWeather>();
+    double averageTemp = 25;
+    public async Task Search()
+    {
+        conferences = await _api.GetConferencesByWeatherAsync(averageTemp);
+    }
+}

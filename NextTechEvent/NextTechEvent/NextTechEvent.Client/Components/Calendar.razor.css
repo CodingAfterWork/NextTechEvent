@@ -1,0 +1,90 @@
+﻿
+
+
+.calendar {
+    width: 100%;
+    background-color:white;
+}
+a {
+    font-size: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+h2{
+    margin-bottom:50px;
+    
+}
+td {
+    height: 50%;
+    border: 1px solid black;
+    position: relative;
+    text-align: center;
+    width: 7%;
+    color:black;
+    padding-top:15px;
+    
+}
+
+/*Left Header*/
+td:first-child {
+    text-align: center;
+    width: 50px;
+    font-size:20px;
+    font-weight:900;
+}
+
+
+th {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    border: 1px solid black;
+    width: 7%;
+    color:black;
+}
+
+td > small {
+    font-size: 10px;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+
+}
+
+
+.yearselector {
+    background-color: red;
+    margin: auto;
+    width: fit-content;
+}
+
+.yearselector > a, .yearselector > h2 {
+    float: left;
+    height:1rem;
+}
+
+    .Color0 {
+    }
+
+.Color1 {
+    background-color: #E4FF7A;
+}
+
+.Color20 {
+    background-color: #FFE81A;
+}
+
+.Color40 {
+    background-color: #FFC414;
+}
+
+.Color60 {
+    background-color: #FFA000;
+}
+
+
+.Color80 {
+    background-color: #FF7A00;
+}
+
+

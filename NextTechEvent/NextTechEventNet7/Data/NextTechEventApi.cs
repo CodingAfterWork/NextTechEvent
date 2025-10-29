@@ -189,7 +189,7 @@ namespace NextTechEvent.Data
                     Location = $"{conference.Venue}, {conference.City}, {conference.Country}",
                     Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
                     End = new CalDateTime(conference.EventEnd.AddDays(1).ToDateTime(new TimeOnly(23, 59))),
-                    IsAllDay = true,
+                    //IsAllDay = true,
                     Summary = $"{conference.Name} - {s.State}",
                     Status = s.State == StateEnum.Accepted ? "CONFIRMED" : "TENTATIVE",
                     Description = $"https://nexttechevent.azurewebsites.net/Conferences/{s.ConferenceId}"
@@ -332,7 +332,7 @@ namespace NextTechEvent.Data
                 .Skip(request.StartIndex)
                 .Take(request.Count).ToListAsync();
 
-            return new ItemsProviderResult<Conference>(confs, stats.TotalResults);
+            return new ItemsProviderResult<Conference>(confs, (int)stats.TotalResults);
         }
 
         public async ValueTask<ItemsProviderResult<Conference>> GetConferencesAsync(ItemsProviderRequest request)
@@ -346,7 +346,7 @@ namespace NextTechEvent.Data
                 .Skip(request.StartIndex)
                 .Take(request.Count).ToListAsync();
 
-            return new ItemsProviderResult<Conference>(confs, stats.TotalResults);
+            return new ItemsProviderResult<Conference>(confs, (int)stats.TotalResults);
         }
 
         public async Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp)

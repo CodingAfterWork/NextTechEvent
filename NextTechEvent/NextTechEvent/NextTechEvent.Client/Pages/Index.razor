@@ -1,0 +1,64 @@
+﻿@page "/"
+@inject INextTechEventApi _api
+
+@using NextTechEvent.Components
+<PageTitle>Index</PageTitle>
+
+<div>
+    <div class="container py-4 py-xl-5">
+        <div class="text-center text-color bg-primary border rounded border-0 p-3">
+            <div class="row row-cols-2 row-cols-md-4">
+                <Counter Number="@opencfp" Text="Open Call for paper" />
+                <Counter Number="@upcoming" Text="Upcoming conferences" />
+                <Counter Number="@newlast7days" Text="Added conferences last 7 days" />
+                <Counter Number="@newlast30days" Text="Added conferences last 30 days" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container py-4 py-xl-5">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2>Find your next conference</h2>
+                <p class="w-lg-50">
+                    This page will help you as a conference speaker, attendee or organizer to find your next conference.
+                </p>
+            </div>
+        </div>
+        <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+
+            <Feature Header="Speaker">
+                This site contains an aggregation of many different sources for call for paper like <a href="https://sessionize.com/" target="_blank">Sessionize</a>, <a href="https://www.papercall.io/">Papercall.io</a>, <a href="https://confs.tech/">Confs.Tech</a>, <a href="https://joind.in/">Joind.in</a>
+                It will help you as a speaker to not submit to different conferences that take place the same time (ask us how we know this is a problem).
+                It not only aggregates information but also adds more information on top like weather forecasts.
+            </Feature>
+
+            <Feature Header="Attendee">
+                As an attendee it will help you to find your next tech event based on location, date, and technology
+            </Feature>
+
+            <Feature Header="Organizer">
+                As an organizer, we will help you with finding a good date to organize your event. Perhaps you are looking for a time slot when no other conferences are happening, or you might look for a time when close to when another conference is happening close by and work with that conference.
+            </Feature>
+        </div>
+    </div>
+</div>
+
+
+@code
+{
+    long opencfp;
+    long upcoming;
+    long newlast7days;
+    long newlast30days;
+    protected async override Task OnInitializedAsync()
+    {
+        var confs = await _api.GetConferenceCountsAsync();
+        opencfp = confs.OpenCfp;
+        upcoming = confs.Upcoming;
+        newlast7days = confs.NewLast7Days;
+        newlast30days = confs.NewLast30Days;
+        await base.OnInitializedAsync();
+    }
+}

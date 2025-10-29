@@ -1,0 +1,55 @@
+﻿.conferenceimage {
+    align-items:start !important;
+}
+
+.temperature {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom:0px
+}
+
+.date {
+    font-size: 0.8rem;
+}
+
+.icon{
+    font-size:3rem;
+    padding-bottom:15px;
+}
+
+.bi {
+    margin-right:10px;
+}
+.temperatures {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.temperature-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+    
+} 
+
+.temp-date {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+}
+
+h1 {
+    margin-bottom:20px; 
+}
+.state {
+    cursor: pointer;
+    min-width: 10px;
+    min-height: 10px;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}

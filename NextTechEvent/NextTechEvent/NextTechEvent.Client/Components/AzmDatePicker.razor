@@ -1,0 +1,34 @@
+﻿@using System.Linq.Expressions;
+@using Telerik.Blazor.Components
+@using Telerik.Blazor;
+
+<TelerikDateRangePicker 
+    StartValue="@StartDate" 
+    StartValueChanged="@StartDateChanged"
+    StartValueExpression="@StartDateExpression"
+    EndValue="@EndDate"
+    EndValueChanged="@EndDateChanged"
+    EndValueExpression="@EndDateExpression" 
+    OnChange="@OnChange"
+
+    />
+    
+
+@code {
+    [Parameter]
+    public DateTime StartDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime> StartDateChanged { get; set; }
+    [Parameter]
+    public Expression<Func<DateTime>> StartDateExpression { get; set; }
+    
+    [Parameter]
+    public DateTime EndDate { get; set; }
+    [Parameter]
+    public EventCallback<DateTime> EndDateChanged { get; set; }
+    [Parameter]
+    public Expression<Func<DateTime>> EndDateExpression { get; set; }
+    
+    [Parameter]
+    public EventCallback<DateRangePickerChangeEventArgs> OnChange { get; set; }
+}

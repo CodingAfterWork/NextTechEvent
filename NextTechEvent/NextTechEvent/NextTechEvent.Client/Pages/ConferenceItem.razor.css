@@ -1,0 +1,26 @@
+﻿.card
+{
+    width:100%;
+}
+time {
+    margin-left: 4px;
+}
+
+img {
+    display: block;
+    /* margin:auto;*/
+    max-width: 100%;
+    max-height: 100px;
+    width: auto;
+    height: 100px;
+    margin-bottom: 10px;
+}
+
+.state {
+    cursor: pointer;
+    min-width: 10px;
+    min-height: 10px;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}

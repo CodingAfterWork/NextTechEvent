@@ -1,0 +1,31 @@
+﻿@page "/Profile/MyEvents"
+@inject NavigationManager navigation
+@inject INextTechEventApi _api
+
+<h3>My events</h3>
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    @foreach (var conference in conferences)
+    {
+        <ConferenceItem Item="conference" ShowCFP="false" />
+    }
+</div>
+
+@code {
+    List<Conference> conferences = new();
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        conferences = await _api.GetConferencesByUserIdAsync(id);
+        await base.OnInitializedAsync();
+    }
+
+
+}
+
+
+    

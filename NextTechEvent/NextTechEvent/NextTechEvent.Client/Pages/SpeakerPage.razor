@@ -1,0 +1,86 @@
+﻿@page "/Speakers"
+@page "/Attendees"
+@page "/Speakers/{cfp:bool}"
+@page "/Attendees/{cfp:bool}"
+@inject INextTechEventApi _api
+@inject NavigationManager _navigationManager
+
+<input type="text" placeholder="Search for conference name, city, country or tags" class="search" @bind="searchterm" @onkeypress="Search" @bind:event="oninput" />
+
+<div class="d-flex flex-wrap justify-content-center gap-4">
+    @if (Conferences.Any())
+    {
+        @foreach (var item in Conferences)
+        {
+            <ConferenceItem Item="@item" ShowCFP="cfp" />
+        }
+    }
+    else
+    {
+        <text>No results</text>
+    }
+    
+    <button @onclick="PreviousPage">Previous</button>
+    <button @onclick="NextPage">Next</button>
+</div>
+
+@code {
+    List<Conference> Conferences = new();
+    string searchterm = "";
+
+    [Parameter]
+    public bool cfp { get; set; } = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (_navigationManager.Uri.ToLower().Contains("speakers"))
+        {
+            cfp = true;
+        }
+        else
+        {
+            cfp = false;
+        }
+        await LoadDataAsync();
+        await base.OnParametersSetAsync();
+    }
+
+    public Task NextPage()
+    {
+        currentpage++;
+        return LoadDataAsync();
+    }
+
+    public Task PreviousPage()
+    {
+        currentpage--;
+        if (currentpage<0)
+        {
+            currentpage = 0;
+        }
+        return LoadDataAsync();
+    }
+    
+    async Task Search(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    int pagesize = 10;
+    int currentpage = 0;
+    private async Task LoadDataAsync()
+    {
+        Conferences = Enumerable.Repeat(new Conference(), pagesize).ToList();
+        await InvokeAsync(StateHasChanged);
+        Conferences = (await _api.SearchActiveConferencesAsync(cfp, searchterm, pagesize, currentpage)).OrderBy(c => c.CfpEndDate).ToList();
+    }
+}

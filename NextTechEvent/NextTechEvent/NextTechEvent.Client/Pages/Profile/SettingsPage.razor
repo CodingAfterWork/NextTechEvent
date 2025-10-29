@@ -1,0 +1,75 @@
+﻿@page "/Profile/Settings"
+@inject NavigationManager navigation
+@inject INextTechEventApi _api
+@if (Settings != null)
+{
+    <h1>Settings</h1>
+    <EditForm Model="Settings" OnSubmit="Save">
+        <h2>Calendar</h2>
+        <span>This is a calendar file (ICAL) that you can add to you Calendar client. This way you will automatically block time for upcoming conferences.</span>
+        <br /><br />
+        @Url
+        <br />
+        <br/>
+        <h2>Sessionize integration</h2>
+        <span>
+            Did you know, NextTechEvent can automatically update your status based on your Sessionize calendar?<br />
+            <ol>
+                <li>Head over to <a href="https://sessionize.com/app/speaker" target="_blank"><u>Sessionize</u></a>.</li>
+                <li>Locate and grab your calendar URL.</li>
+                <li>Return here and paste the URL into the textbox below.</li>
+            </ol>
+            Voilà! Your Sessionize details (what conferences you have submitted to, been accepted to, and so on) will now be synced with NextTechEvent. Easy, right?
+        </span><br /><br />
+        <BlazmInputText LabelText="SessionizeUrl" @bind-Value="Settings.SessionizeCalendarUrl" />
+        <br /><br />
+        <button type="submit" class="btn btn-primary">Save</button>
+    </EditForm>
+}
+
+@code {
+    public NextTechEvent.Data.Settings? Settings { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationStateTask { get; set; }
+    public string Url { get; set; } = "";
+    protected override async Task OnInitializedAsync()
+    {
+        ArgumentNullException.ThrowIfNull(authenticationStateTask);
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+        ArgumentNullException.ThrowIfNull(id);
+        Settings = await _api.GetSettingsByUserIdAsync(id);
+        if (Settings == null) //Save the settings
+        {
+            Settings = await _api.SaveSettingsAsync(new Settings() { UserId=id});
+        }
+        UpdateUrl();
+    }
+
+
+
+    public async Task Save()
+    {
+        
+        if (Settings != null)
+        {
+            Settings = await _api.SaveSettingsAsync(Settings);
+            if (!string.IsNullOrEmpty(Settings.SessionizeCalendarUrl))
+            {
+                //Download the calendar from Sessionize and sync
+                await _api.UpdateStatusBasedOnSessionizeCalendarAsync(Settings);
+            }
+        }
+        UpdateUrl();
+    }
+
+    private void UpdateUrl()
+    {
+        if (Settings != null)
+        {
+            Url = $"{navigation.BaseUri}Calendar/{Settings.Id}";
+        }
+    }
+    
+}

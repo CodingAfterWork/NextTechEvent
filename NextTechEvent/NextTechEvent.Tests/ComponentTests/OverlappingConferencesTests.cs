@@ -1,13 +1,12 @@
 ﻿using NextTechEvent.Components;
-using NextTechEvent.Pages;
-using NextTechEventNet7.Components;
-using NextTechEventNet7.Pages;
+using NextTechEvent.Client.Components;
 using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NextTechEvent.Client.Pages;
 
 namespace NextTechEvent.Tests.ComponentTests;
 
