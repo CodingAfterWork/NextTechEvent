@@ -135,7 +135,7 @@ public class NextTechEventClient : INextTechEventApi
 
     public Task<TimeSeriesEntry<WeatherData>[]> GetWeatherTimeSeriesAsync(string conferenceId)
     {
-        return _http.GetFromJsonAsync<TimeSeriesEntry<WeatherData>[]>($"/api/conferences/{Uri.EscapeDataString(conferenceId)}/weather-timeseries")!;
+        return _http.GetFromJsonAsync<TimeSeriesEntry<WeatherData>[]>($"/api/conferences/weather/{conferenceId}")!;
     }
 
     public async Task<Conference> SaveConferenceAsync(Conference conference)

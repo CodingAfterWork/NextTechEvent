@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inject INextTechEventApi _api
-
+@attribute [StreamRendering]
 @using NextTechEvent.Components
 <PageTitle>Index</PageTitle>
 
@@ -48,17 +48,19 @@
 
 @code
 {
+    [PersistentState]
+	public ConferenceCounts? ConferenceCounts { get; set; }
     long opencfp;
     long upcoming;
     long newlast7days;
     long newlast30days;
     protected async override Task OnInitializedAsync()
     {
-        var confs = await _api.GetConferenceCountsAsync();
-        opencfp = confs.OpenCfp;
-        upcoming = confs.Upcoming;
-        newlast7days = confs.NewLast7Days;
-        newlast30days = confs.NewLast30Days;
+        ConferenceCounts ??= await _api.GetConferenceCountsAsync();
+        opencfp = ConferenceCounts.OpenCfp;
+        upcoming = ConferenceCounts.Upcoming;
+        newlast7days = ConferenceCounts.NewLast7Days;
+        newlast30days = ConferenceCounts.NewLast30Days;
         await base.OnInitializedAsync();
     }
 }

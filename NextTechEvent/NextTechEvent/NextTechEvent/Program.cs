@@ -142,7 +142,7 @@ apiGroup.MapGet("/conferences/open-cfp", async (int startIndex, int count, INext
 // await api.GetConferencesAsync(new ItemsProviderRequest(startIndex, count, ct)));
 //apiGroup.MapGet("/conferences/by-user/{userId}", async (string userId, INextTechEventApi api) => await api.GetConferencesByUserIdAsync(userId));
 apiGroup.MapGet("/conferences/by-weather", async (double averageTemp, INextTechEventApi api) => await api.GetConferencesByWeatherAsync(averageTemp));
-apiGroup.MapGet("/conferences/{conferenceId}/weather-timeseries", async (string conferenceId, INextTechEventApi api) => await api.GetWeatherTimeSeriesAsync(conferenceId));
+apiGroup.MapGet("/conferences/weather/{*conferenceId}", async (string conferenceId, INextTechEventApi api) => await api.GetWeatherTimeSeriesAsync(conferenceId));
 
 //// Statuses
 //apiGroup.MapPost("/statuses", async (Status status, INextTechEventApi api) => Results.Ok(await api.SaveStatusAsync(status)));
