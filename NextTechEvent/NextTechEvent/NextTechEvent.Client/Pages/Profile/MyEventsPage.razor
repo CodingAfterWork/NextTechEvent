@@ -12,19 +12,11 @@
 
 @code {
     List<Conference> conferences = new();
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationStateTask { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        ArgumentNullException.ThrowIfNull(authenticationStateTask);
-        var authState = await authenticationStateTask;
-        var user = authState.User;
-        var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-        conferences = await _api.GetConferencesByUserIdAsync(id);
+        conferences = await _api.GetConferencesByUserAsync();
         await base.OnInitializedAsync();
     }
-
-
 }
 
 

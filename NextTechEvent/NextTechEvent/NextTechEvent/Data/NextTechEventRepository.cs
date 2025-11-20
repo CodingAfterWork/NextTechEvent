@@ -13,15 +13,17 @@ using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Queries.Facets;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Session.TimeSeries;
+using System.Security.Claims;
+using Telerik.SvgIcons;
 
 namespace NextTechEvent.Data;
 
 
-public partial class NextTechEventServerApi : INextTechEventApi
+public partial class NextTechEventRepository
 {
     IDocumentStore _store;
     IHttpClientFactory _factory;
-    public NextTechEventServerApi(IDocumentStore store, IHttpClientFactory factory)
+    public NextTechEventRepository(IDocumentStore store, IHttpClientFactory factory)
     {
         _store = store;
         _factory = factory;
@@ -35,20 +37,20 @@ public partial class NextTechEventServerApi : INextTechEventApi
         return conference;
     }
 
-    public async Task<Status> SaveStatusAsync(Status status)
-    {
-        var savedstatus = await GetStatusAsync(status.ConferenceId, status.UserId);
-        if (savedstatus != null)
-        {
-            status.Id = savedstatus.Id;
-        }
+    //public async Task<Status> SaveStatusAsync(Status status)
+    //{
+    //    var savedstatus = await GetStatusAsync(status.ConferenceId, status.UserId);
+    //    if (savedstatus != null)
+    //    {
+    //        status.Id = savedstatus.Id;
+    //    }
 
-        using IAsyncDocumentSession session = _store.OpenAsyncSession();
-        await session.StoreAsync(status);
-        await session.SaveChangesAsync();
-        _statuses = null;
-        return status;
-    }
+    //    using IAsyncDocumentSession session = _store.OpenAsyncSession();
+    //    await session.StoreAsync(status);
+    //    await session.SaveChangesAsync();
+    //    _statuses = null;
+    //    return status;
+    //}
 
     public async Task<Settings> SaveSettingsAsync(Settings item)
     {
@@ -63,8 +65,9 @@ public partial class NextTechEventServerApi : INextTechEventApi
         return item;
     }
 
-    public async Task<Status?> GetStatusAsync(string conferenceId, string userId)
+    public async Task<Status?> GetStatusAsync(string conferenceId, ClaimsPrincipal user)
     {
+        var userId = GetUserId(user);
         var statuses = await GetStatusesAsync(userId);
         return statuses.Where(c => c.ConferenceId == conferenceId && c.UserId == userId).FirstOrDefault();
     }
@@ -94,39 +97,39 @@ public partial class NextTechEventServerApi : INextTechEventApi
         return settings;
     }
 
-    public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
-    {
-        var calendarcontent = await _factory.CreateClient().GetStringAsync(settings.SessionizeCalendarUrl);
-        var sessionizecalendar = Ical.Net.Calendar.Load(calendarcontent);
-        foreach (CalendarEvent item in sessionizecalendar.Events.Where(i => i.Uid.StartsWith("SZEVENT")))
-        {
-            var eventId = item.Uid.Replace("SZEVENT", "");
-            var conf = await GetConferenceBySessionizeIdAsync(eventId);
-            if (conf == null || conf.Id == null)
-                continue;
-            var status = await GetStatusAsync(conf.Id, settings.UserId);
-            var state = GetStateFromCalendarEvent(item);
-            if (status == null || (status != null && status.State != state))
-            {
-                if (status == null)
-                {
+    //public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
+    //{
+    //    var calendarcontent = await _factory.CreateClient().GetStringAsync(settings.SessionizeCalendarUrl);
+    //    var sessionizecalendar = Ical.Net.Calendar.Load(calendarcontent);
+    //    foreach (CalendarEvent item in sessionizecalendar.Events.Where(i => i.Uid.StartsWith("SZEVENT")))
+    //    {
+    //        var eventId = item.Uid.Replace("SZEVENT", "");
+    //        var conf = await GetConferenceBySessionizeIdAsync(eventId);
+    //        if (conf == null || conf.Id == null)
+    //            continue;
+    //        var status = await GetStatusAsync(conf.Id, settings.UserId);
+    //        var state = GetStateFromCalendarEvent(item);
+    //        if (status == null || (status != null && status.State != state))
+    //        {
+    //            if (status == null)
+    //            {
 
 
-                    status = new()
-                    {
-                        ConferenceId = conf.Id,
-                        UserId = settings.UserId,
-                        State = state
-                    };
+    //                status = new()
+    //                {
+    //                    ConferenceId = conf.Id,
+    //                    UserId = settings.UserId,
+    //                    State = state
+    //                };
 
-                }
-                status.State = state;
+    //            }
+    //            status.State = state;
 
-                await SaveStatusAsync(status);
-            }
-        }
+    //            await SaveStatusAsync(status);
+    //        }
+    //    }
 
-    }
+    //}
 
     private StateEnum GetStateFromCalendarEvent(CalendarEvent item)
     {
@@ -142,8 +145,14 @@ public partial class NextTechEventServerApi : INextTechEventApi
         }
     }
 
-    public async Task<List<Conference>> GetConferencesByUserIdAsync(string userId)
+    private string GetUserId(ClaimsPrincipal userClaims)
     {
+        return userClaims?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value ?? "";
+    }
+
+    public async Task<List<Conference>> GetConferencesByUserAsync(ClaimsPrincipal userClaims)
+    {
+        var userId = GetUserId(userClaims);
         using IAsyncDocumentSession session = _store.OpenAsyncSession();
         var data = await session.Query<Status>()
             .Include(c => c.ConferenceId)

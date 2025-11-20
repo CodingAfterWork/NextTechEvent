@@ -85,9 +85,9 @@ public class NextTechEventClient : INextTechEventApi
         return result;
     }
 
-    public Task<List<Conference>> GetConferencesByUserIdAsync(string userId)
+    public Task<List<Conference>> GetConferencesByUserAsync()
     {
-        return _http.GetFromJsonAsync<List<Conference>>($"/api/conferences/by-user/{Uri.EscapeDataString(userId)}")!;
+        return _http.GetFromJsonAsync<List<Conference>>($"/api/conferences/by-user")!;
     }
 
     public Task<List<ConferenceWeather>> GetConferencesByWeatherAsync(double averageTemp)
@@ -118,9 +118,9 @@ public class NextTechEventClient : INextTechEventApi
         return _http.GetFromJsonAsync<Settings>($"/api/settings/by-user/{Uri.EscapeDataString(userId)}");
     }
 
-    public Task<Status?> GetStatusAsync(string conferenceId, string userId)
+    public Task<Status?> GetStatusAsync(string conferenceId)
     {
-        return _http.GetFromJsonAsync<Status>($"/api/statuses/{Uri.EscapeDataString(conferenceId)}/{Uri.EscapeDataString(userId)}");
+        return _http.GetFromJsonAsync<Status>($"/api/statuses/{conferenceId}");
     }
 
     public Task<List<Status>> GetStatusesAsync(string userId)

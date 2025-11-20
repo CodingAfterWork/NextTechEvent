@@ -25,7 +25,7 @@ public class NextTextEventTestFixture : RavenTestDriver, IAsyncLifetime
         services.AddTransient((services) =>
         {
             TestContext testContext = new();
-            testContext.Services.AddScoped<INextTechEventApi, NextTechEventServerApi>();
+            //testContext.Services.AddScoped<INextTechEventApi, NextTechEventRepository>();
             testContext.Services.AddSingleton(ctx =>
             {
                 var store = GetDocumentStore(); //Gets a test store

@@ -12,6 +12,7 @@ using NextTechEvent.Data;
 using NextTechEvent.Data.Index;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Indexes;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
@@ -23,11 +24,17 @@ builder.Configuration.AddJsonFile("appsettings.local.json", optional: true, relo
 // Add services to the container.
 builder.Services.AddRazorComponents()
  .AddInteractiveServerComponents()
- .AddInteractiveWebAssemblyComponents();
+ .AddInteractiveWebAssemblyComponents()
+ .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true); ;
 
 
-builder.Services.AddScoped<INextTechEventApi, NextTechEventServerApi>();
+builder.Services.AddScoped<INextTechEventApi, NextTechEventClient>();
+builder.Services.AddScoped<NextTechEventRepository>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<INextTechEventApi,NextTechEventClient>(httpClient =>
+{
+    httpClient.BaseAddress = new("https://localhost:7081/");
+});
 builder.Services.AddBlazm();
 builder.Services.AddSingleton<IDocumentStore>(ctx =>
 {
@@ -118,7 +125,7 @@ app.MapGet("calendar/{id}", async (string id, INextTechEventApi api) =>
 var apiGroup = app.MapGroup("/api");
 
 // Conferences
-apiGroup.MapGet("/conferences", async (INextTechEventApi api) => await api.GetConferencesAsync());
+apiGroup.MapGet("/conferences", async (NextTechEventRepository api) => await api.GetConferencesAsync());
 
 
 //apiGroup.MapPost("/conferences", async (Conference conference, INextTechEventApi api) =>
@@ -126,27 +133,27 @@ apiGroup.MapGet("/conferences", async (INextTechEventApi api) => await api.GetCo
 // var saved = await api.SaveConferenceAsync(conference);
 // return Results.Ok(saved);
 //});
-apiGroup.MapGet("/conferences/{*id}", async (string id, INextTechEventApi api) => await api.GetConferenceAsync(id));
-apiGroup.MapGet("/conferences/count", async (INextTechEventApi api) => await api.GetConferenceCountsAsync());
+apiGroup.MapGet("/conferences/{*id}", async (string id, NextTechEventRepository api) => await api.GetConferenceAsync(id));
+apiGroup.MapGet("/conferences/count", async (NextTechEventRepository api) => await api.GetConferenceCountsAsync());
 apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, INextTechEventApi api) => await api.GetConferencesAsync(startdate, enddate));
-apiGroup.MapGet("/conferences/near", async (double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate, INextTechEventApi api) =>
+apiGroup.MapGet("/conferences/near", async (double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate, NextTechEventRepository api) =>
  await api.GetConferencesAsync(latitude, longitude, radius, startdate, enddate));
-apiGroup.MapGet("/conferences/search", async (string searchterm, INextTechEventApi api) => await api.SearchConferencesAsync(searchterm));
-apiGroup.MapGet("/conferences/search-active", async (bool hasOpenCallforPaper, string? searchterm, int pagesize, int page, INextTechEventApi api) =>
+apiGroup.MapGet("/conferences/search", async (string searchterm, NextTechEventRepository api) => await api.SearchConferencesAsync(searchterm));
+apiGroup.MapGet("/conferences/search-active", async (bool hasOpenCallforPaper, string? searchterm, int pagesize, int page, NextTechEventRepository api) =>
  await api.SearchActiveConferencesAsync(hasOpenCallforPaper, searchterm ?? string.Empty, pagesize, page));
-apiGroup.MapGet("/conferences/count-by-date", async (DateOnly start, DateOnly end, string? searchterm, INextTechEventApi api) =>
+apiGroup.MapGet("/conferences/count-by-date", async (DateOnly start, DateOnly end, string? searchterm, NextTechEventRepository api) =>
  await api.GetConferenceCountByDate(start, end, searchterm ?? string.Empty));
-apiGroup.MapGet("/conferences/open-cfp", async (int startIndex, int count, INextTechEventApi api, CancellationToken ct) =>
+apiGroup.MapGet("/conferences/open-cfp", async (int startIndex, int count, NextTechEventRepository api, CancellationToken ct) =>
  await api.GetConferencesWithOpenCfpAsync(new ItemsProviderRequest(startIndex, count, ct)));
 //apiGroup.MapGet("/conferences/virtualized", async (int startIndex, int count, INextTechEventApi api, CancellationToken ct) =>
 // await api.GetConferencesAsync(new ItemsProviderRequest(startIndex, count, ct)));
-//apiGroup.MapGet("/conferences/by-user/{userId}", async (string userId, INextTechEventApi api) => await api.GetConferencesByUserIdAsync(userId));
-apiGroup.MapGet("/conferences/by-weather", async (double averageTemp, INextTechEventApi api) => await api.GetConferencesByWeatherAsync(averageTemp));
-apiGroup.MapGet("/conferences/weather/{*conferenceId}", async (string conferenceId, INextTechEventApi api) => await api.GetWeatherTimeSeriesAsync(conferenceId));
+apiGroup.MapGet("/conferences/by-user", async (ClaimsPrincipal user,NextTechEventRepository api) => await api.GetConferencesByUserAsync(user));
+apiGroup.MapGet("/conferences/by-weather", async (double averageTemp, NextTechEventRepository api) => await api.GetConferencesByWeatherAsync(averageTemp));
+apiGroup.MapGet("/conferences/weather/{*conferenceId}", async (string conferenceId, NextTechEventRepository api) => await api.GetWeatherTimeSeriesAsync(conferenceId));
 
 //// Statuses
 //apiGroup.MapPost("/statuses", async (Status status, INextTechEventApi api) => Results.Ok(await api.SaveStatusAsync(status)));
-//apiGroup.MapGet("/statuses/{conferenceId}/{userId}", async (string conferenceId, string userId, INextTechEventApi api) => await api.GetStatusAsync(conferenceId, userId));
+apiGroup.MapGet("/statuses/{*conferenceId}", async (string conferenceId, ClaimsPrincipal user, NextTechEventRepository api) => await api.GetStatusAsync(conferenceId, user));
 //apiGroup.MapGet("/statuses/by-user/{userId}", async (string userId, INextTechEventApi api) => await api.GetStatusesAsync(userId));
 //apiGroup.MapPost("/statuses/update-from-calendar", async (Settings settings, INextTechEventApi api) =>
 //{
