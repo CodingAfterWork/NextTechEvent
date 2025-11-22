@@ -11,9 +11,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="BlazorPro.Spinkit" Version="1.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-rc.2.25502.107" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.0-rc.2.25502.107" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-rc.2.25502.107" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
+		<PackageReference Include="SharpZipLib" Version="1.4.2" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.0" />
 		<PackageReference Include="Telerik.UI.for.Blazor" Version="6.0.2" />
 		<PackageReference Include="Blazm.Components" Version="1.1.7" />
 		<PackageReference Include="InterfaceGenerator" Version="1.0.14">
@@ -21,7 +23,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 
-		<PackageReference Include="Ical.Net" Version="5.1.1" />
+		<PackageReference Include="Ical.Net" Version="5.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>

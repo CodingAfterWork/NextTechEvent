@@ -6,6 +6,7 @@ using NextTechEvent.Data;
 using NextTechEvent.Data.Index;
 using Raven.Client.Documents.Session.TimeSeries;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text;
 using Telerik.SvgIcons;
 
@@ -108,14 +109,9 @@ public class NextTechEventClient : INextTechEventApi
         return result;
     }
 
-    public Task<Settings?> GetSettingsAsync(string id)
+    public Task<Settings?> GetSettingsAsync()
     {
-        return _http.GetFromJsonAsync<Settings>($"/api/settings/{Uri.EscapeDataString(id)}");
-    }
-
-    public Task<Settings?> GetSettingsByUserIdAsync(string userId)
-    {
-        return _http.GetFromJsonAsync<Settings>($"/api/settings/by-user/{Uri.EscapeDataString(userId)}");
+        return _http.GetFromJsonAsync<Settings>($"/api/settings");
     }
 
     public Task<Status?> GetStatusAsync(string conferenceId)
@@ -123,9 +119,9 @@ public class NextTechEventClient : INextTechEventApi
         return _http.GetFromJsonAsync<Status>($"/api/statuses/{conferenceId}");
     }
 
-    public Task<List<Status>> GetStatusesAsync(string userId)
+    public Task<List<Status>> GetStatusesAsync()
     {
-        return _http.GetFromJsonAsync<List<Status>>($"/api/statuses/by-user/{Uri.EscapeDataString(userId)}")!;
+        return _http.GetFromJsonAsync<List<Status>>($"/api/statuses/by-user/")!;
     }
 
     public Task<Ical.Net.Calendar> GetUserCalendarAsync(string userId)
@@ -180,12 +176,12 @@ public class NextTechEventClient : INextTechEventApi
         .Build();
         return _http.GetFromJsonAsync<List<ConferenceSearchTerm>>($"/api/conferences/search{qs}")!;
     }
-
-    public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
-    {
-        var resp = await _http.PostAsJsonAsync("/api/statuses/update-from-calendar", settings);
-        resp.EnsureSuccessStatusCode();
-    }
+    //This logic should be in the function API
+    //public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
+    //{
+    //    var resp = await _http.PostAsJsonAsync("/api/statuses/update-from-calendar", settings);
+    //    resp.EnsureSuccessStatusCode();
+    //}
 
     private sealed class QueryStringBuilder
     {

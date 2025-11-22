@@ -8,7 +8,7 @@
 <input type="text" placeholder="Search for conference name, city, country or tags" class="search" @bind="searchterm" @onkeypress="Search" @bind:event="oninput" />
 
 <div class="d-flex flex-wrap justify-content-center gap-4">
-    @if (Conferences.Any())
+    @if (Conferences!=null &&  Conferences.Any())
     {
         @foreach (var item in Conferences)
         {
@@ -25,7 +25,8 @@
 </div>
 
 @code {
-    List<Conference> Conferences = new();
+    [PersistentState]
+    public List<Conference>? Conferences { get; set; }
     string searchterm = "";
 
     [Parameter]
@@ -47,14 +48,14 @@
         {
             cfp = false;
         }
-        await LoadDataAsync();
+        await LoadDataAsync(false);
         await base.OnParametersSetAsync();
     }
 
     public Task NextPage()
     {
         currentpage++;
-        return LoadDataAsync();
+        return LoadDataAsync(true);
     }
 
     public Task PreviousPage()
@@ -64,23 +65,27 @@
         {
             currentpage = 0;
         }
-        return LoadDataAsync();
+        return LoadDataAsync(true);
     }
     
     async Task Search(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
         {
-            await LoadDataAsync();
+            await LoadDataAsync(true);
         }
     }
 
     int pagesize = 10;
     int currentpage = 0;
-    private async Task LoadDataAsync()
+    private async Task LoadDataAsync(bool reload)
     {
-        Conferences = Enumerable.Repeat(new Conference(), pagesize).ToList();
-        await InvokeAsync(StateHasChanged);
-        Conferences = (await _api.SearchActiveConferencesAsync(cfp, searchterm, pagesize, currentpage)).OrderBy(c => c.CfpEndDate).ToList();
+        //Conferences = Enumerable.Repeat(new Conference(), pagesize).ToList();
+        //await InvokeAsync(StateHasChanged);
+        if(reload)
+        {
+            Conferences = null;
+        }
+        Conferences ??= (await _api.SearchActiveConferencesAsync(cfp, searchterm, pagesize, currentpage)).OrderBy(c => c.CfpEndDate).ToList();
     }
 }

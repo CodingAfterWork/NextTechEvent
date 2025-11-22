@@ -37,28 +37,29 @@ public partial class NextTechEventRepository
         return conference;
     }
 
-    //public async Task<Status> SaveStatusAsync(Status status)
-    //{
-    //    var savedstatus = await GetStatusAsync(status.ConferenceId, status.UserId);
-    //    if (savedstatus != null)
-    //    {
-    //        status.Id = savedstatus.Id;
-    //    }
+    public async Task<Status> SaveStatusAsync(Status status, ClaimsPrincipal user)
+    {
+        var savedstatus = await GetStatusAsync(status.ConferenceId,user);
+        if (savedstatus != null)
+        {
+            status.Id = savedstatus.Id;
+        }
 
-    //    using IAsyncDocumentSession session = _store.OpenAsyncSession();
-    //    await session.StoreAsync(status);
-    //    await session.SaveChangesAsync();
-    //    _statuses = null;
-    //    return status;
-    //}
+        status.UserId = GetUserId(user);
+        using IAsyncDocumentSession session = _store.OpenAsyncSession();
+        await session.StoreAsync(status);
+        await session.SaveChangesAsync();
+        _statuses = null;
+        return status;
+    }
 
-    public async Task<Settings> SaveSettingsAsync(Settings item)
+    public async Task<Settings> SaveSettingsAsync(Settings item, ClaimsPrincipal user)
     {
         if (item.Id == null)
         {
             item.Id = Guid.NewGuid().ToString().Replace("-", "");
         }
-
+        item.UserId = GetUserId(user);
         using IAsyncDocumentSession session = _store.OpenAsyncSession();
         await session.StoreAsync(item);
         await session.SaveChangesAsync();
@@ -68,35 +69,35 @@ public partial class NextTechEventRepository
     public async Task<Status?> GetStatusAsync(string conferenceId, ClaimsPrincipal user)
     {
         var userId = GetUserId(user);
-        var statuses = await GetStatusesAsync(userId);
+        var statuses = await GetStatusesAsync(user);
         return statuses.Where(c => c.ConferenceId == conferenceId && c.UserId == userId).FirstOrDefault();
     }
 
     List<Status>? _statuses;
-    public async Task<List<Status>> GetStatusesAsync(string userId)
+    public async Task<List<Status>> GetStatusesAsync(ClaimsPrincipal user)
     {
         if (_statuses == null)
         {
             using IAsyncDocumentSession session = _store.OpenAsyncSession();
-            _statuses = await session.Query<Status>().Where(c => c.UserId == userId).ToListAsync();
+            _statuses = await session.Query<Status>().Where(c => c.UserId == GetUserId(user)).ToListAsync();
         }
         return _statuses ?? new();
     }
 
-    public async Task<Settings?> GetSettingsAsync(string id)
+    public async Task<Settings?> GetSettingsAsync(ClaimsPrincipal user)
+    {
+        using IAsyncDocumentSession session = _store.OpenAsyncSession();
+        return await session.Query<Settings>().Where(c => c.UserId == GetUserId(user)).FirstOrDefaultAsync();
+    }
+
+
+    public async Task<Settings?> GetSettingsByIdAsync(string id)
     {
         using IAsyncDocumentSession session = _store.OpenAsyncSession();
         return await session.Query<Settings>().Where(c => c.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<Settings?> GetSettingsByUserIdAsync(string userId)
-    {
-        using IAsyncDocumentSession session = _store.OpenAsyncSession();
-        var settings = await session.Query<Settings>().Where(c => c.UserId == userId).FirstOrDefaultAsync();
-
-        return settings;
-    }
-
+    //This should be in the function API
     //public async Task UpdateStatusBasedOnSessionizeCalendarAsync(Settings settings)
     //{
     //    var calendarcontent = await _factory.CreateClient().GetStringAsync(settings.SessionizeCalendarUrl);
@@ -195,20 +196,23 @@ public partial class NextTechEventRepository
         foreach (var s in data)
         {
             var conference = await session.LoadAsync<Conference>(s.ConferenceId);
-            var e = new CalendarEvent
+            if (conference != null)
             {
-                Uid = conference.Id,
-                Location = $"{conference.Venue}, {conference.City}, {conference.Country}",
-                Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
-                End = new CalDateTime(conference.EventEnd.AddDays(1).ToDateTime(new TimeOnly(23, 59))),
-                //IsAllDay = true,
-                Summary = $"{conference.Name} - {s.State}",
-                Status = s.State == StateEnum.Accepted ? "CONFIRMED" : "TENTATIVE",
-                Description = $"https://nexttechevent.azurewebsites.net/Conferences/{s.ConferenceId}"
-            };
+                var e = new CalendarEvent
+                {
+                    Uid = conference.Id,
+                    Location = $"{conference.Venue}, {conference.City}, {conference.Country}",
+                    Start = new CalDateTime(conference.EventStart.ToDateTime(new TimeOnly(0, 0))),
+                    End = new CalDateTime(conference.EventEnd.AddDays(1).ToDateTime(new TimeOnly(23, 59))),
+                    //IsAllDay = true,
+                    Summary = $"{conference.Name} - {s.State}",
+                    Status = s.State == StateEnum.Accepted ? "CONFIRMED" : "TENTATIVE",
+                    Description = $"https://nexttechevent.azurewebsites.net/Conferences/{s.ConferenceId}"
+                };
 
 
-            calendar.Events.Add(e);
+                calendar.Events.Add(e);
+            }
         }
         return calendar;
     }

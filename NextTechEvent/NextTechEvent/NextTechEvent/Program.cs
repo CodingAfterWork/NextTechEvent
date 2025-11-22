@@ -108,10 +108,10 @@ app.MapGet("logout", async (HttpContext context) =>
 });
 
 
-app.MapGet("calendar/{id}", async (string id, INextTechEventApi api) =>
+app.MapGet("calendar/{id}", async (string id, NextTechEventRepository api) =>
 {
-    var settings = await api.GetSettingsAsync(id);
-    var calendar = await api.GetUserCalendarAsync(settings!.UserId);
+    var settings = await api.GetSettingsByIdAsync(id);
+    var calendar = await api.GetUserCalendarAsync(settings!.UserId!);
 
     CalendarSerializer serializer = new();
     MemoryStream ms = new MemoryStream();
@@ -135,47 +135,26 @@ apiGroup.MapGet("/conferences", async (NextTechEventRepository api) => await api
 //});
 apiGroup.MapGet("/conferences/{*id}", async (string id, NextTechEventRepository api) => await api.GetConferenceAsync(id));
 apiGroup.MapGet("/conferences/count", async (NextTechEventRepository api) => await api.GetConferenceCountsAsync());
+//apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, NextTechEventRepository api) => await api.GetConferencesAsync(startdate, enddate));
 apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, INextTechEventApi api) => await api.GetConferencesAsync(startdate, enddate));
-apiGroup.MapGet("/conferences/near", async (double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate, NextTechEventRepository api) =>
- await api.GetConferencesAsync(latitude, longitude, radius, startdate, enddate));
+apiGroup.MapGet("/conferences/near", async (double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate, NextTechEventRepository api) => await api.GetConferencesAsync(latitude, longitude, radius, startdate, enddate));
 apiGroup.MapGet("/conferences/search", async (string searchterm, NextTechEventRepository api) => await api.SearchConferencesAsync(searchterm));
-apiGroup.MapGet("/conferences/search-active", async (bool hasOpenCallforPaper, string? searchterm, int pagesize, int page, NextTechEventRepository api) =>
- await api.SearchActiveConferencesAsync(hasOpenCallforPaper, searchterm ?? string.Empty, pagesize, page));
-apiGroup.MapGet("/conferences/count-by-date", async (DateOnly start, DateOnly end, string? searchterm, NextTechEventRepository api) =>
- await api.GetConferenceCountByDate(start, end, searchterm ?? string.Empty));
-apiGroup.MapGet("/conferences/open-cfp", async (int startIndex, int count, NextTechEventRepository api, CancellationToken ct) =>
- await api.GetConferencesWithOpenCfpAsync(new ItemsProviderRequest(startIndex, count, ct)));
-//apiGroup.MapGet("/conferences/virtualized", async (int startIndex, int count, INextTechEventApi api, CancellationToken ct) =>
-// await api.GetConferencesAsync(new ItemsProviderRequest(startIndex, count, ct)));
+apiGroup.MapGet("/conferences/search-active", async (bool hasOpenCallforPaper, string? searchterm, int pagesize, int page, NextTechEventRepository api) => await api.SearchActiveConferencesAsync(hasOpenCallforPaper, searchterm ?? string.Empty, pagesize, page));
+apiGroup.MapGet("/conferences/count-by-date", async (DateOnly start, DateOnly end, string? searchterm, NextTechEventRepository api) => await api.GetConferenceCountByDate(start, end, searchterm ?? string.Empty));
+apiGroup.MapGet("/conferences/open-cfp", async (int startIndex, int count, NextTechEventRepository api, CancellationToken ct) => await api.GetConferencesWithOpenCfpAsync(new ItemsProviderRequest(startIndex, count, ct)));
 apiGroup.MapGet("/conferences/by-user", async (ClaimsPrincipal user,NextTechEventRepository api) => await api.GetConferencesByUserAsync(user));
 apiGroup.MapGet("/conferences/by-weather", async (double averageTemp, NextTechEventRepository api) => await api.GetConferencesByWeatherAsync(averageTemp));
 apiGroup.MapGet("/conferences/weather/{*conferenceId}", async (string conferenceId, NextTechEventRepository api) => await api.GetWeatherTimeSeriesAsync(conferenceId));
 
 //// Statuses
-//apiGroup.MapPost("/statuses", async (Status status, INextTechEventApi api) => Results.Ok(await api.SaveStatusAsync(status)));
+apiGroup.MapPost("/statuses", async (Status status, ClaimsPrincipal user,INextTechEventApi api) => Results.Ok(await api.SaveStatusAsync(status)));
 apiGroup.MapGet("/statuses/{*conferenceId}", async (string conferenceId, ClaimsPrincipal user, NextTechEventRepository api) => await api.GetStatusAsync(conferenceId, user));
-//apiGroup.MapGet("/statuses/by-user/{userId}", async (string userId, INextTechEventApi api) => await api.GetStatusesAsync(userId));
-//apiGroup.MapPost("/statuses/update-from-calendar", async (Settings settings, INextTechEventApi api) =>
-//{
-// await api.UpdateStatusBasedOnSessionizeCalendarAsync(settings);
-// return Results.NoContent();
-//});
-//apiGroup.MapPost("/statuses/update-from-calendar/{settingsId}", async (string settingsId, INextTechEventApi api) =>
-//{
-// var settings = await api.GetSettingsAsync(settingsId);
-// if (settings is null)
-// return Results.NotFound();
-// await api.UpdateStatusBasedOnSessionizeCalendarAsync(settings);
-// return Results.NoContent();
-//});
+apiGroup.MapGet("/statuses/by-user/", async (ClaimsPrincipal user, INextTechEventApi api) => await api.GetStatusesAsync());
+
 
 //// Settings
-//apiGroup.MapPost("/settings", async (Settings settings, INextTechEventApi api) => Results.Ok(await api.SaveSettingsAsync(settings)));
-//apiGroup.MapGet("/settings/{id}", async (string id, INextTechEventApi api) => await api.GetSettingsAsync(id));
-//apiGroup.MapGet("/settings/by-user/{userId}", async (string userId, INextTechEventApi api) => await api.GetSettingsByUserIdAsync(userId));
-
-//// User calendar (JSON calendar object)
-//apiGroup.MapGet("/users/{userId}/calendar", async (string userId, INextTechEventApi api) => await api.GetUserCalendarAsync(userId));
+apiGroup.MapPost("/settings", async (Settings settings, ClaimsPrincipal user, NextTechEventRepository api) => Results.Ok(await api.SaveSettingsAsync(settings,user)));
+apiGroup.MapGet("/settings/", async (ClaimsPrincipal user, NextTechEventRepository api) => await api.GetSettingsAsync(user));
 
 app.Run();
 

@@ -26,7 +26,7 @@ public class OverlappingConferencesTests
         DateOnly end = DateOnly.FromDateTime(DateTime.Now.AddDays(10));
 
         // Arrange
-        var cut = _fixture.Context.RenderComponent<OverlappingConferences>(
+        var cut = _fixture.Context.Render<OverlappingConferences>(
             parameters => parameters
             .Add(p => p.Start, start)
             .Add(p => p.End, end)

@@ -29,25 +29,16 @@
 
 @code {
     public NextTechEvent.Data.Settings? Settings { get; set; }
-    [CascadingParameter]
-    private Task<AuthenticationState>? authenticationStateTask { get; set; }
     public string Url { get; set; } = "";
     protected override async Task OnInitializedAsync()
     {
-        ArgumentNullException.ThrowIfNull(authenticationStateTask);
-        var authState = await authenticationStateTask;
-        var user = authState.User;
-        var id = user?.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-        ArgumentNullException.ThrowIfNull(id);
-        Settings = await _api.GetSettingsByUserIdAsync(id);
+        Settings = await _api.GetSettingsAsync();
         if (Settings == null) //Save the settings
         {
-            Settings = await _api.SaveSettingsAsync(new Settings() { UserId=id});
+            Settings = await _api.SaveSettingsAsync(new Settings());
         }
         UpdateUrl();
     }
-
-
 
     public async Task Save()
     {
@@ -55,11 +46,6 @@
         if (Settings != null)
         {
             Settings = await _api.SaveSettingsAsync(Settings);
-            if (!string.IsNullOrEmpty(Settings.SessionizeCalendarUrl))
-            {
-                //Download the calendar from Sessionize and sync
-                await _api.UpdateStatusBasedOnSessionizeCalendarAsync(Settings);
-            }
         }
         UpdateUrl();
     }
