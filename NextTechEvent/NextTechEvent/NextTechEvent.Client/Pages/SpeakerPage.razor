@@ -8,7 +8,15 @@
 <input type="text" placeholder="Search for conference name, city, country or tags" class="search" @bind="searchterm" @onkeypress="Search" @bind:event="oninput" />
 
 <div class="d-flex flex-wrap justify-content-center gap-4">
-    @if (Conferences!=null &&  Conferences.Any())
+    
+    @if(Conferences==null)
+    {
+        @foreach (var item in Enumerable.Repeat(new Conference(), pagesize))
+        {
+            <ConferenceItem Item="@item" ShowCFP="cfp" />
+        }
+    }
+    else if (Conferences.Any())
     {
         @foreach (var item in Conferences)
         {
@@ -80,8 +88,6 @@
     int currentpage = 0;
     private async Task LoadDataAsync(bool reload)
     {
-        //Conferences = Enumerable.Repeat(new Conference(), pagesize).ToList();
-        //await InvokeAsync(StateHasChanged);
         if(reload)
         {
             Conferences = null;

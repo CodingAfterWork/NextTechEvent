@@ -135,8 +135,7 @@ apiGroup.MapGet("/conferences", async (NextTechEventRepository api) => await api
 //});
 apiGroup.MapGet("/conferences/{*id}", async (string id, NextTechEventRepository api) => await api.GetConferenceAsync(id));
 apiGroup.MapGet("/conferences/count", async (NextTechEventRepository api) => await api.GetConferenceCountsAsync());
-//apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, NextTechEventRepository api) => await api.GetConferencesAsync(startdate, enddate));
-apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, INextTechEventApi api) => await api.GetConferencesAsync(startdate, enddate));
+apiGroup.MapGet("/conferences/range", async (DateOnly startdate, DateOnly enddate, NextTechEventRepository api) => await api.GetConferencesAsync(startdate, enddate));
 apiGroup.MapGet("/conferences/near", async (double latitude, double longitude, double radius, DateOnly startdate, DateOnly enddate, NextTechEventRepository api) => await api.GetConferencesAsync(latitude, longitude, radius, startdate, enddate));
 apiGroup.MapGet("/conferences/search", async (string searchterm, NextTechEventRepository api) => await api.SearchConferencesAsync(searchterm));
 apiGroup.MapGet("/conferences/search-active", async (bool hasOpenCallforPaper, string? searchterm, int pagesize, int page, NextTechEventRepository api) => await api.SearchActiveConferencesAsync(hasOpenCallforPaper, searchterm ?? string.Empty, pagesize, page));
