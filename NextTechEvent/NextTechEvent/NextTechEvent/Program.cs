@@ -27,6 +27,19 @@ builder.Services.AddRazorComponents()
  .AddInteractiveWebAssemblyComponents()
  .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true); ;
 
+builder.Services.AddCors(options=>
+{
+    options.AddDefaultPolicy(policy => 
+    {
+        policy.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
+builder.Services.AddMcpServer()
+.WithHttpTransport()
+.WithToolsFromAssembly();
 
 builder.Services.AddScoped<INextTechEventApi, NextTechEventClient>();
 builder.Services.AddScoped<NextTechEventRepository>();
@@ -154,7 +167,7 @@ apiGroup.MapGet("/statuses/by-user/", async (ClaimsPrincipal user, INextTechEven
 //// Settings
 apiGroup.MapPost("/settings", async (Settings settings, ClaimsPrincipal user, NextTechEventRepository api) => Results.Ok(await api.SaveSettingsAsync(settings,user)));
 apiGroup.MapGet("/settings/", async (ClaimsPrincipal user, NextTechEventRepository api) => await api.GetSettingsAsync(user));
-
+app.MapMcp("/mcp");
 app.Run();
 
 public partial class Program
