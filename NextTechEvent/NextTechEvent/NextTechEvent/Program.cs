@@ -171,7 +171,9 @@ apiGroup.MapGet("/statuses/by-user/", async (ClaimsPrincipal user, INextTechEven
 //// Settings
 apiGroup.MapPost("/settings", async (Settings settings, ClaimsPrincipal user, NextTechEventRepository api) => Results.Ok(await api.SaveSettingsAsync(settings,user)));
 apiGroup.MapGet("/settings/", async (ClaimsPrincipal user, NextTechEventRepository api) => await api.GetSettingsAsync(user));
-app.MapMcp("/mcp");
+app.MapMcp("/mcp")
+   .AllowAnonymous()
+   .DisableAntiforgery();
 app.Run();
 
 public partial class Program
