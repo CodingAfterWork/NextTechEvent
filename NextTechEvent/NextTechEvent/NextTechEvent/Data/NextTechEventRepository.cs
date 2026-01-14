@@ -142,7 +142,6 @@ public partial class NextTechEventRepository
                 return StateEnum.Submitted;
             default:
                 return StateEnum.NotSet;
-                break;
         }
     }
 

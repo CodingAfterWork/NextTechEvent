@@ -39,7 +39,9 @@ builder.Services.AddCors(options=>
 
 builder.Services.AddMcpServer()
 .WithHttpTransport()
-.WithToolsFromAssembly();
+.WithToolsFromAssembly()
+.WithResourcesFromAssembly();
+
 
 builder.Services.AddScoped<INextTechEventApi, NextTechEventClient>();
 builder.Services.AddScoped<NextTechEventRepository>();

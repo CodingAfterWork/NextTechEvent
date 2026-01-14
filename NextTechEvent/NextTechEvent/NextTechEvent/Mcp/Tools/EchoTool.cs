@@ -1,7 +1,7 @@
 ﻿using ModelContextProtocol.Server;
 using System.ComponentModel;
 
-namespace NextTechEvent.Tools;
+namespace NextTechEvent.Mcp.Tools;
 
 [McpServerToolType]
 public class EchoTool

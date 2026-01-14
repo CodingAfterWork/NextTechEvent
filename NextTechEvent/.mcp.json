@@ -1,9 +1,10 @@
 {
   "inputs": [],
   "servers": {
-    "mymcp": {
+    "NTE Prod": {
       "type": "http",
-      "url": "https://localhost:7081/mcp"
-    } 
+      "url": "https://nexttechevent.com/mcp",
+      "headers": {}
+    }
   }
 }
