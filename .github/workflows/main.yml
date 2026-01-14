@@ -28,10 +28,10 @@ jobs:
           MY_API_KEY: ${{ secrets.TELERIK_NUGET_KEY }}
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release NextTechEvent/NextTechEvent/NextTechEvent.csproj
+        run: dotnet build --configuration Release NextTechEvent/NextTechEvent/NextTechEvent/NextTechEvent.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp NextTechEvent/NextTechEvent/NextTechEvent.csproj
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp NextTechEvent/NextTechEvent/NextTechEvent/NextTechEvent.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

@@ -46,7 +46,9 @@ builder.Services.AddScoped<NextTechEventRepository>();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<INextTechEventApi,NextTechEventClient>(httpClient =>
 {
-    httpClient.BaseAddress = new("https://localhost:7081/");
+  
+    //httpClient.BaseAddress = new("https://localhost:7081/");
+    httpClient.BaseAddress = new("https://nexttechevent.com/");
 });
 builder.Services.AddBlazm();
 builder.Services.AddSingleton<IDocumentStore>(ctx =>
