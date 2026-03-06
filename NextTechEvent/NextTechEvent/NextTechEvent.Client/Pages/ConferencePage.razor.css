@@ -2,6 +2,10 @@
     align-items:start !important;
 }
 
+.card {
+    position: relative;
+}
+
 .temperature {
     font-size: 2rem;
     font-weight: bold;
