@@ -1,6 +1,7 @@
 ﻿.card
 {
     width:100%;
+    position: relative;
 }
 time {
     margin-left: 4px;
