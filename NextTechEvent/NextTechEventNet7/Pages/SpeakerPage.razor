@@ -19,10 +19,14 @@
     {
         <text>No results</text>
     }
-    
-    <button @onclick="PreviousPage">Previous</button>
-    <button @onclick="NextPage">Next</button>
+
 </div>
+
+<nav class="d-flex justify-content-center align-items-center gap-3 mt-3" aria-label="Conference list pagination">
+    <button @onclick="PreviousPage" disabled="@(currentpage == 0)" aria-label="Previous page">Previous</button>
+    <span aria-current="page">Page @(currentpage + 1)</span>
+    <button @onclick="NextPage" disabled="@(IsLastPage)" aria-label="Next page">Next</button>
+</nav>
 
 @code {
     List<Conference> Conferences = new();
@@ -77,6 +81,8 @@
 
     int pagesize = 10;
     int currentpage = 0;
+    bool IsLastPage => Conferences.Count < pagesize;
+
     private async Task LoadDataAsync()
     {
         Conferences = Enumerable.Repeat(new Conference(), pagesize).ToList();
