@@ -6,7 +6,7 @@
 @if (conference != null)
 {
     <div class="container mt-4">
-        <div class="row align-items-center">
+        <div class="row align-items-start">
             <div class="col-md-8">
                 <h1 class="display-4">@conference.Name</h1>
                 <p class="lead"><i class="bi bi-calendar-check-fill"></i>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
