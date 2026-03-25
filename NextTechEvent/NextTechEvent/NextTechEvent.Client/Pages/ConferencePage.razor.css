@@ -2,6 +2,10 @@
     align-items:start !important;
 }
 
+.conference-image-column {
+    align-self: flex-start !important;
+}
+
 .temperature {
     font-size: 2rem;
     font-weight: bold;

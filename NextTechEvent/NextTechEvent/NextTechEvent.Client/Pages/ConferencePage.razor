@@ -6,7 +6,7 @@
 @if (conference != null)
 {
     <div class="container mt-4">
-        <div class="row align-items-start">
+        <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="display-4">@conference.Name</h1>
                 <p class="lead"><i class="bi bi-calendar-check-fill"></i>@conference.EventStart.ToString("MMMM dd, yyyy",culture) - @conference.EventEnd.ToString("MMMM dd, yyyy",culture)</p>
@@ -28,7 +28,7 @@
                 }
                 <ConferenceStatus ConferenceId="@conference.Id" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 conference-image-column">
                 @if (!string.IsNullOrEmpty(conference.ImageUrl) && conference.ImageUrl != "https://sessionize.com/landing/images/brand/social/image.png") {
                     <img class="img-fluid conferenceimage" src="@conference.ImageUrl">
                 }
